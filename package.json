@@ -33,7 +33,7 @@
     "@angular/compiler-cli": "^19.2.2",
     "@angular/core": "^19.2.2",
     "@angular/platform-browser": "^19.2.2",
-    "@angular/platform-browser-dynamic": "^19.2.2",
+    "@angular/platform-browser-dynamic": "^19.2.3",
     "@types/jasmine": "~5.1.7",
     "@types/node": "^22.13.10",
     "angular-eslint": "19.2.1",
