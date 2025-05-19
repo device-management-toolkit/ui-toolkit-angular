@@ -35,7 +35,7 @@
     "@angular/platform-browser": "^19.2.11",
     "@angular/platform-browser-dynamic": "^19.2.11",
     "@types/jasmine": "~5.1.8",
-    "@types/node": "^22.15.18",
+    "@types/node": "^22.15.19",
     "angular-eslint": "19.4.0",
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
