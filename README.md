@@ -6,9 +6,11 @@
 [![OSSF-Scorecard Score](https://img.shields.io/ossf-scorecard/github.com/open-amt-cloud-toolkit/ui-toolkit-angular?style=for-the-badge&label=OSSF%20Score)](https://api.securityscorecards.dev/projects/github.com/open-amt-cloud-toolkit/ui-toolkit-angular)
 [![Discord](https://img.shields.io/discord/1063200098680582154?style=for-the-badge&label=Discord&logo=discord&logoColor=white&labelColor=%235865F2&link=https%3A%2F%2Fdiscord.gg%2FDKHeUNEWVH)](https://discord.gg/DKHeUNEWVH)
 
+> IMPORTANT: For now, we are continuing to publish both @device-management-toolkit/ui-toolkit-angular and @open-amt-cloud-toolkit/ui-toolkit-angular npm packages to avoid a breaking change. Please update your package.json at your earliest convenience for when we cease to publish @open-amt-cloud-toolkit/ui-toolkit-angular. This is in effort to support the renaming of the toolkit.
+
 ## Prerequisites
 
-To succesfully deploy the UI Toolkit using Angular, the following software must be installed on your development system:
+To successfully deploy the UI Toolkit using Angular, the following software must be installed on your development system:
 
 - [Node.js\* LTS 18.x.x or newer](https://nodejs.org/en/)
 - [git](https://git-scm.com/downloads)
