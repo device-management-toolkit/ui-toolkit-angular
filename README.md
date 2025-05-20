@@ -20,7 +20,7 @@ To succesfully deploy the UI Toolkit using Angular, the following software must 
 1. Run the following command to add the Angular UI Toolkit and install the required dependencies:
 
    ```bash
-   npm install @open-amt-cloud-toolkit/ui-toolkit-angular --save
+   npm install @device-management-toolkit/ui-toolkit-angular --save
    ```
 
 <br>

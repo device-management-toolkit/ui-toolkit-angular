@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { IDERComponent } from './ider.component'
-import { AMTRedirector, AMTIDER } from '@open-amt-cloud-toolkit/ui-toolkit/core'
+import { AMTRedirector, AMTIDER } from '@device-management-toolkit/ui-toolkit/core'
 
 describe('IderComponent', () => {
   let component: IDERComponent
