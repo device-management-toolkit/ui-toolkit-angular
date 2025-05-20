@@ -12,7 +12,7 @@ import {
   DataProcessor,
   KeyBoardHelper,
   MouseHelper
-} from '@open-amt-cloud-toolkit/ui-toolkit/core'
+} from '@device-management-toolkit/ui-toolkit/core'
 
 describe('KvmComponent', () => {
   let component: KVMComponent

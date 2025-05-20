@@ -19,7 +19,7 @@ import {
   TerminalDataProcessor,
   RedirectorConfig,
   Protocol
-} from '@open-amt-cloud-toolkit/ui-toolkit/core'
+} from '@device-management-toolkit/ui-toolkit/core'
 import { TerminalComponent } from './terminal/terminal.component'
 
 @Component({

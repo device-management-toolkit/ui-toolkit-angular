@@ -1,5 +1,5 @@
 import { EventEmitter, Component, OnInit, OnDestroy, input, output } from '@angular/core'
-import { AMTRedirector, Protocol, AMTIDER, RedirectorConfig } from '@open-amt-cloud-toolkit/ui-toolkit/core'
+import { AMTRedirector, Protocol, AMTIDER, RedirectorConfig } from '@device-management-toolkit/ui-toolkit/core'
 
 export interface IDERData {
   floppyRead: number
