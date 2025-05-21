@@ -1,5 +1,5 @@
 {
-  "name": "@open-amt-cloud-toolkit/ui-toolkit-angular",
+  "name": "@device-management-toolkit/ui-toolkit-angular",
   "version": "9.1.2",
   "license": "Apache-2.0",
   "bugs": {
@@ -18,7 +18,7 @@
     "e2e": "ng e2e"
   },
   "peerDependencies": {
-    "@open-amt-cloud-toolkit/ui-toolkit": "^3.3.1",
+    "@device-management-toolkit/ui-toolkit": "^3.3.2",
     "@xterm/xterm": "^5.5.0"
   },
   "devDependencies": {
