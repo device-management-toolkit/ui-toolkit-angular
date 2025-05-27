@@ -18,7 +18,7 @@
     "e2e": "ng e2e"
   },
   "peerDependencies": {
-    "@device-management-toolkit/ui-toolkit": "^3.3.2",
+    "@device-management-toolkit/ui-toolkit": "^3.3.3",
     "@xterm/xterm": "^5.5.0"
   },
   "devDependencies": {
