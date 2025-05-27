@@ -25,8 +25,6 @@ To successfully deploy the UI Toolkit using Angular, the following software must
    npm install @device-management-toolkit/ui-toolkit-angular --save
    ```
 
-<br>
-
 ## Additional Resources
 
 - For detailed documentation and Getting Started, [visit the docs site](https://device-management-toolkit.github.io/docs).
