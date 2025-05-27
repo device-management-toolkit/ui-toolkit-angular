@@ -17,6 +17,10 @@
     "ci-prettify": "npx prettier --check .",
     "e2e": "ng e2e"
   },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "@device-management-toolkit/ui-toolkit": "^3.3.3",
     "@xterm/xterm": "^5.5.0"
