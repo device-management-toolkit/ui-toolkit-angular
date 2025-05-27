@@ -1,3 +1,10 @@
+## [9.1.4](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v9.1.3...v9.1.4) (2025-05-27)
+
+
+### Bug Fixes
+
+* ensure package is published as public ([#1893](https://github.com/device-management-toolkit/ui-toolkit-angular/issues/1893)) ([a80ee9d](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/a80ee9d69631e12e2ad073f263b92008be76abe7))
+
 ## [9.1.3](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v9.1.2...v9.1.3) (2025-05-27)
 
 ## [9.1.2](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v9.1.1...v9.1.2) (2025-03-10)
