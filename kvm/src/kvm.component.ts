@@ -7,17 +7,16 @@ import {
   Component,
   ElementRef,
   OnDestroy,
-  OnInit,
   viewChild,
   input,
   output,
-  EventEmitter,
   inject,
   Renderer2,
-  computed,
-  model,
-  effect
+  effect,
+  signal,
+  DestroyRef
 } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import {
   AMTDesktop,
   AMTKvmDataRedirector,
@@ -28,43 +27,52 @@ import {
   MouseHelper,
   Protocol
 } from '@device-management-toolkit/ui-toolkit/core'
-import { Observable, fromEvent, timer } from 'rxjs'
+import { fromEvent, timer, Subscription } from 'rxjs'
 import { throttleTime } from 'rxjs/operators'
+
+interface EncodingOption {
+  value: number
+  viewValue: string
+}
 
 @Component({
   selector: 'amt-kvm',
   templateUrl: './kvm.component.html',
   styleUrls: ['./kvm.component.css']
 })
-export class KVMComponent implements OnInit, AfterViewInit, OnDestroy {
-  renderer = inject(Renderer2)
+export class KVMComponent implements OnDestroy {
+  private readonly renderer = inject(Renderer2)
+  private readonly destroyRef = inject(DestroyRef)
+
   readonly canvas = viewChild<ElementRef>('canvas')
   readonly device = viewChild.required<string>('device')
-  public context!: CanvasRenderingContext2D
+
+  // Canvas properties
+  public context: CanvasRenderingContext2D | null = null
+  public width = signal(400)
+  public height = signal(400)
+
+  // Input properties
   public isFullscreen = input(false)
-
-  //setting a width and height for the canvas
-
-  public width = 400
-  public height = 400
   public mpsServer = input('')
   public authToken = input('')
   public deviceId = input('')
 
+  // Input/Output properties
   readonly deviceStatus = output<number>()
-  readonly deviceConnection = input(new EventEmitter<boolean>())
-  readonly selectedEncoding = input(new EventEmitter<number>())
+  readonly deviceConnection = input<boolean>(false)
+  readonly selectedEncoding = input<number>(1)
 
-  module: AMTDesktop | null
-  redirector: AMTKvmDataRedirector | null
-  dataProcessor!: IDataProcessor | null
-  mouseHelper!: MouseHelper
-  keyboardHelper!: KeyBoardHelper
-  powerState: any = 0
-  selected = 1
-  timeInterval!: any
-  mouseMove: Observable<MouseEvent>
-  encodings = [
+  // Component state
+  private module: AMTDesktop | null = null
+  private redirector: AMTKvmDataRedirector | null = null
+  private dataProcessor: IDataProcessor | null = null
+  private mouseHelper: MouseHelper | null = null
+  private keyboardHelper: KeyBoardHelper | null = null
+  private selected = signal(1)
+  private mouseMove$?: Subscription
+
+  readonly encodings: EncodingOption[] = [
     { value: 1, viewValue: 'RLE 8' },
     { value: 2, viewValue: 'RLE 16' }
   ]
@@ -73,23 +81,27 @@ export class KVMComponent implements OnInit, AfterViewInit, OnDestroy {
     effect(() => {
       this.toggleFullscreen()
     })
-  }
-  ngOnInit(): void {
-    this.deviceConnection().subscribe((data: boolean) => {
-      if (data) {
+
+    // React to deviceConnection changes
+    effect(() => {
+      const connected = this.deviceConnection()
+      if (connected && this.redirector == null) {
+        console.log('KVMComponent: Device connected, initializing KVM...')
         this.init()
-      } else {
+      } else if (!connected) {
+        console.log('KVMComponent: Device disconnected, stopping KVM...')
         this.stopKvm()
       }
     })
-    this.selectedEncoding().subscribe((data) => {
-      this.selected = data
+
+    // React to selectedEncoding changes
+    effect(() => {
+      if(this.selectedEncoding() === this.selected() || !this.deviceConnection()) return
+      console.log('KVMComponent: Encoding changed to', this.selectedEncoding())
+      const encoding = this.selectedEncoding()
+      this.selected.set(encoding)
       this.onEncodingChange()
     })
-  }
-
-  ngAfterViewInit(): void {
-    this.init()
   }
 
   toggleFullscreen(): void {
@@ -107,14 +119,12 @@ export class KVMComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.renderer.removeClass(canvasElement, 'fullscreen')
     }
-    if (this.mouseHelper != null) {
-      this.mouseHelper.resetOffsets()
-    }
+    this.mouseHelper?.resetOffsets()
   }
 
-  instantiate(): void {
+  private instantiate(): void {
     const canvas = this.canvas()
-    this.context = canvas?.nativeElement.getContext('2d')
+    this.context = canvas?.nativeElement.getContext('2d') || null
     const config: RedirectorConfig = {
       mode: 'kvm',
       protocol: Protocol.KVM,
@@ -141,79 +151,73 @@ export class KVMComponent implements OnInit, AfterViewInit, OnDestroy {
     this.redirector.onError = this.onRedirectorError.bind(this)
     this.module.onSend = this.redirector.send.bind(this.redirector)
     this.module.onProcessData = this.dataProcessor.processData.bind(this.dataProcessor)
-    this.module.bpp = this.selected
+    this.module.bpp = this.selected()
 
-    this.mouseMove = fromEvent(canvas?.nativeElement, 'mousemove')
-    this.mouseMove.pipe(throttleTime(200)).subscribe((event: MouseEvent) => {
-      if (this.mouseHelper != null) {
-        this.mouseHelper.mousemove(event)
-      }
-    })
+    this.mouseMove$ = fromEvent<MouseEvent>(canvas?.nativeElement, 'mousemove')
+      .pipe(throttleTime(200), takeUntilDestroyed(this.destroyRef))
+      .subscribe((event: MouseEvent) => {
+        this.mouseHelper?.mousemove(event)
+      })
   }
 
-  onConnectionStateChange = (redirector: any, state: number): any => {
+  private onConnectionStateChange = (redirector: any, state: number): void => {
     this.deviceStatus.emit(state)
   }
 
-  onRedirectorError(): void {
+  private onRedirectorError(): void {
     this.reset()
   }
 
-  init(): void {
+  private init(): void {
     this.instantiate()
     setTimeout(() => {
       this.autoConnect()
     }, 4000)
   }
 
-  autoConnect(): void {
-    if (this.redirector != null) {
+  private autoConnect(): void {
+    if (this.redirector) {
       this.redirector.start(WebSocket)
-      this.keyboardHelper.GrabKeyInput()
+      this.keyboardHelper?.GrabKeyInput()
     }
   }
 
-  onEncodingChange(): void {
+  private onEncodingChange(): void {
     this.stopKvm()
     timer(1000).subscribe(() => {
       this.autoConnect()
     })
   }
 
-  reset = (): void => {
+  private reset(): void {
     this.redirector = null
     this.module = null
     this.dataProcessor = null
-    this.height = 400
-    this.width = 400
+    this.height.set(400)
+    this.width.set(400)
     this.instantiate()
   }
 
-  stopKvm = (): void => {
+  private stopKvm(): void {
     this.redirector?.stop()
-    this.keyboardHelper.UnGrabKeyInput()
+    this.keyboardHelper?.UnGrabKeyInput()
     this.reset()
   }
 
   onMouseup(event: MouseEvent): void {
-    if (this.mouseHelper != null) {
-      this.mouseHelper.mouseup(event)
-    }
+    this.mouseHelper?.mouseup(event)
   }
 
   onMousedown(event: MouseEvent): void {
-    if (this.mouseHelper != null) {
-      this.mouseHelper.mousedown(event)
-    }
+    this.mouseHelper?.mousedown(event)
   }
 
   onMousemove(event: MouseEvent): void {
-    if (this.mouseHelper != null) {
-      this.mouseHelper.mousemove(event)
-    }
+    this.mouseHelper?.mousemove(event)
   }
 
   ngOnDestroy(): void {
+    this.mouseMove$?.unsubscribe()
     this.stopKvm()
   }
 }

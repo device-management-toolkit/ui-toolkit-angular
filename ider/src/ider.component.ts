@@ -1,4 +1,4 @@
-import { EventEmitter, Component, OnInit, OnDestroy, input, output } from '@angular/core'
+import { Component, OnDestroy, input, output, inject, DestroyRef, effect } from '@angular/core'
 import { AMTRedirector, Protocol, AMTIDER, RedirectorConfig } from '@device-management-toolkit/ui-toolkit/core'
 
 export interface IDERData {
@@ -13,7 +13,9 @@ export interface IDERData {
   template: '',
   styles: []
 })
-export class IDERComponent implements OnInit, OnDestroy {
+export class IDERComponent implements OnDestroy {
+  private readonly destroyRef = inject(DestroyRef)
+
   redirector: AMTRedirector | null
   ider: AMTIDER | null
   data: IDERData | null
@@ -22,37 +24,41 @@ export class IDERComponent implements OnInit, OnDestroy {
   readonly deviceStatus = output<number>()
   readonly iderData = output<IDERData>()
 
-  readonly deviceConnection = input<EventEmitter<boolean>>(new EventEmitter<boolean>())
+  readonly deviceConnection = input<boolean>(false)
   public readonly cdrom = input<File | null>(null)
   public readonly floppy = input<File | null>(null)
   public mpsServer = input('')
   public authToken = input('')
   public deviceId = input('')
 
-  ngOnInit(): void {
-    this.deviceConnection().subscribe((data: boolean) => {
-      if (data) {
-        this.init()
+  constructor() {
+    // React to deviceConnection changes
+    effect(() => {
+      const connected = this.deviceConnection()
+      if (connected) {
+        if (this.redirector == null) {
+          this.init()
+        }
       } else {
         this.stopIder()
       }
     })
   }
 
-  init(): void {
+  private init(): void {
     this.instantiate()
     setTimeout(() => {
       this.startIder()
     }, 4000)
   }
 
-  startIder(): void {
+  private startIder(): void {
     if (this.redirector != null) {
       this.redirector.start(WebSocket)
     }
   }
 
-  instantiate(): void {
+  private instantiate(): void {
     const config: RedirectorConfig = {
       mode: 'ider',
       protocol: Protocol.IDER,
@@ -74,7 +80,7 @@ export class IDERComponent implements OnInit, OnDestroy {
     this.ider.sectorStats = this.iderSectorStats.bind(this)
   }
 
-  iderSectorStats(mode: number, dev: number, total: number, start: number, len: number): void {
+  private iderSectorStats(mode: number, dev: number, total: number, start: number, len: number): void {
     if (this.ider == null) {
       return
     }
@@ -103,18 +109,18 @@ export class IDERComponent implements OnInit, OnDestroy {
     })
   }
 
-  onConnectionStateChange = (redirector: any, state: number): any => {
+  private onConnectionStateChange = (redirector: any, state: number): any => {
     this.deviceStatus.emit(state)
   }
 
-  stopIder(): void {
+  private stopIder(): void {
     if (this.redirector !== null) {
       this.redirector.stop()
       this.cleanup()
     }
   }
 
-  cleanup(): void {
+  private cleanup(): void {
     this.redirector = null
     this.ider = null
   }
