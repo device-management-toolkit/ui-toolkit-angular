@@ -64,12 +64,12 @@ export class KVMComponent implements OnDestroy {
   readonly selectedEncoding = input<number>(1)
 
   // Component state
-  private module: AMTDesktop | null = null
-  private redirector: AMTKvmDataRedirector | null = null
-  private dataProcessor: IDataProcessor | null = null
-  private mouseHelper: MouseHelper | null = null
-  private keyboardHelper: KeyBoardHelper | null = null
-  private selected = signal(1)
+  module: AMTDesktop | null = null
+  redirector: AMTKvmDataRedirector | null = null
+  dataProcessor: IDataProcessor | null = null
+  mouseHelper: MouseHelper | null = null
+  keyboardHelper: KeyBoardHelper | null = null
+  selected = signal(1)
   private mouseMove$?: Subscription
 
   readonly encodings: EncodingOption[] = [
@@ -96,7 +96,7 @@ export class KVMComponent implements OnDestroy {
 
     // React to selectedEncoding changes
     effect(() => {
-      if(this.selectedEncoding() === this.selected() || !this.deviceConnection()) return
+      if (this.selectedEncoding() === this.selected() || !this.deviceConnection()) return
       console.log('KVMComponent: Encoding changed to', this.selectedEncoding())
       const encoding = this.selectedEncoding()
       this.selected.set(encoding)
@@ -122,7 +122,7 @@ export class KVMComponent implements OnDestroy {
     this.mouseHelper?.resetOffsets()
   }
 
-  private instantiate(): void {
+  instantiate(): void {
     const canvas = this.canvas()
     this.context = canvas?.nativeElement.getContext('2d') || null
     const config: RedirectorConfig = {
@@ -164,18 +164,18 @@ export class KVMComponent implements OnDestroy {
     this.deviceStatus.emit(state)
   }
 
-  private onRedirectorError(): void {
+  onRedirectorError(): void {
     this.reset()
   }
 
-  private init(): void {
+  init(): void {
     this.instantiate()
     setTimeout(() => {
       this.autoConnect()
     }, 4000)
   }
 
-  private autoConnect(): void {
+  autoConnect(): void {
     if (this.redirector) {
       this.redirector.start(WebSocket)
       this.keyboardHelper?.GrabKeyInput()
@@ -189,7 +189,7 @@ export class KVMComponent implements OnDestroy {
     })
   }
 
-  private reset(): void {
+  reset(): void {
     this.redirector = null
     this.module = null
     this.dataProcessor = null
@@ -198,7 +198,7 @@ export class KVMComponent implements OnDestroy {
     this.instantiate()
   }
 
-  private stopKvm(): void {
+  stopKvm(): void {
     this.redirector?.stop()
     this.keyboardHelper?.UnGrabKeyInput()
     this.reset()

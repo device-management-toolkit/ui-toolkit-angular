@@ -65,14 +65,14 @@ export class SOLComponent implements OnDestroy, AfterViewInit {
     this.init()
   }
 
-  private init(): void {
+  init(): void {
     this.instantiate()
     setTimeout(() => {
       this.startSol()
     }, 4000)
   }
 
-  private instantiate(): void {
+  instantiate(): void {
     this.terminal = new AmtTerminal()
     this.dataProcessor = new TerminalDataProcessor(this.terminal)
     const config: RedirectorConfig = {
@@ -127,7 +127,7 @@ export class SOLComponent implements OnDestroy, AfterViewInit {
   }
 
   stopSol(): void {
-    if (this.redirector !== null) {
+    if (this.redirector != null) {
       this.redirector.stop()
       this.handleClearTerminal()
       this.term?.dispose()

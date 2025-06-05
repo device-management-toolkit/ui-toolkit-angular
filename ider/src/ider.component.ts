@@ -45,20 +45,20 @@ export class IDERComponent implements OnDestroy {
     })
   }
 
-  private init(): void {
+  init(): void {
     this.instantiate()
     setTimeout(() => {
       this.startIder()
     }, 4000)
   }
 
-  private startIder(): void {
+  startIder(): void {
     if (this.redirector != null) {
       this.redirector.start(WebSocket)
     }
   }
 
-  private instantiate(): void {
+  instantiate(): void {
     const config: RedirectorConfig = {
       mode: 'ider',
       protocol: Protocol.IDER,
@@ -80,7 +80,7 @@ export class IDERComponent implements OnDestroy {
     this.ider.sectorStats = this.iderSectorStats.bind(this)
   }
 
-  private iderSectorStats(mode: number, dev: number, total: number, start: number, len: number): void {
+  iderSectorStats(mode: number, dev: number, total: number, start: number, len: number): void {
     if (this.ider == null) {
       return
     }
@@ -109,18 +109,18 @@ export class IDERComponent implements OnDestroy {
     })
   }
 
-  private onConnectionStateChange = (redirector: any, state: number): any => {
+  onConnectionStateChange = (redirector: any, state: number): any => {
     this.deviceStatus.emit(state)
   }
 
-  private stopIder(): void {
-    if (this.redirector !== null) {
+  stopIder(): void {
+    if (this.redirector != null) {
       this.redirector.stop()
       this.cleanup()
     }
   }
 
-  private cleanup(): void {
+  cleanup(): void {
     this.redirector = null
     this.ider = null
   }

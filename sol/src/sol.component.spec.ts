@@ -25,9 +25,15 @@ describe('SolComponent', () => {
   const setup = (): void => {
     fixture = TestBed.createComponent(SOLComponent)
     component = fixture.componentInstance
+    // Set deviceConnection to false first to prevent immediate effect trigger
+    fixture.componentRef.setInput('deviceConnection', false)
     fixture.componentRef.setInput('mpsServer', '')
     fixture.componentRef.setInput('authToken', '')
     fixture.componentRef.setInput('deviceId', '')
+    fixture.detectChanges()
+
+    // Now enable connection to trigger init
+    fixture.componentRef.setInput('deviceConnection', true)
     fixture.detectChanges()
   }
 
@@ -37,6 +43,7 @@ describe('SolComponent', () => {
     fixture.componentRef.setInput('mpsServer', 'wss://localhost')
     fixture.componentRef.setInput('authToken', 'authToken')
     fixture.componentRef.setInput('deviceId', '')
+    fixture.componentRef.setInput('deviceConnection', true) // Enable connection to trigger init
     tick(4500)
     fixture.detectChanges()
     flush()
