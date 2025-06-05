@@ -20,6 +20,9 @@ describe('IderComponent', () => {
     }).compileComponents()
     fixture = TestBed.createComponent(IDERComponent)
     component = fixture.componentInstance
+
+    // Initialize with deviceConnection = false to avoid triggering effect during setup
+    fixture.componentRef.setInput('deviceConnection', false)
     fixture.detectChanges()
   })
 
@@ -51,15 +54,27 @@ describe('IderComponent', () => {
     expect(component.deviceStatus.emit).toHaveBeenCalledWith(1)
   })
 
-  it('should call instantiate when deviceConnection emits true', () => {
-    spyOn(component, 'instantiate')
-    component.deviceConnection().emit(true)
-    expect(component.instantiate).toHaveBeenCalled()
+  it('should call init when deviceConnection is true', () => {
+    spyOn(component, 'init')
+    fixture.componentRef.setInput('deviceConnection', true)
+    fixture.detectChanges()
+    expect(component.init).toHaveBeenCalled()
   })
 
-  it('should call stopIder when deviceConnection emits false', () => {
+  it('should call stopIder when deviceConnection is false', () => {
     spyOn(component, 'stopIder')
-    component.deviceConnection().emit(false)
+
+    // First set deviceConnection to true to initialize
+    fixture.componentRef.setInput('deviceConnection', true)
+    fixture.detectChanges()
+
+    // Set up a mock redirector so the effect will call stopIder
+    component.redirector = {} as any
+
+    // Then set deviceConnection to false
+    fixture.componentRef.setInput('deviceConnection', false)
+    fixture.detectChanges()
+
     expect(component.stopIder).toHaveBeenCalled()
   })
 
