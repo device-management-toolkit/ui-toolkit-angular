@@ -4,14 +4,16 @@
  **********************************************************************/
 import {
   Component,
-  OnInit,
   ViewEncapsulation,
   OnDestroy,
   AfterViewInit,
   input,
   output,
-  EventEmitter
+  inject,
+  DestroyRef,
+  effect
 } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Terminal } from '@xterm/xterm'
 import {
   AmtTerminal,
@@ -29,23 +31,30 @@ import { TerminalComponent } from './terminal/terminal.component'
   encapsulation: ViewEncapsulation.None,
   imports: [TerminalComponent]
 })
-export class SOLComponent implements OnInit, OnDestroy, AfterViewInit {
+export class SOLComponent implements OnDestroy, AfterViewInit {
+  private readonly destroyRef = inject(DestroyRef)
+
   terminal: AmtTerminal
   container!: any
   term: Terminal
   redirector: AMTRedirector
   dataProcessor: TerminalDataProcessor
   deviceState = 0
+
   readonly deviceStatus = output<number>()
-  readonly deviceConnection = input<EventEmitter<boolean>>(new EventEmitter<boolean>())
+  readonly deviceConnection = input<boolean>(false)
   public mpsServer = input('')
   public authToken = input('')
   public deviceId = input('')
 
-  ngOnInit(): void {
-    this.deviceConnection().subscribe((data: boolean) => {
-      if (data) {
-        this.init()
+  constructor() {
+    // React to deviceConnection changes
+    effect(() => {
+      const connected = this.deviceConnection()
+      if (connected) {
+        if (this.redirector == null) {
+          this.init()
+        }
       } else {
         this.stopSol()
       }
@@ -118,7 +127,7 @@ export class SOLComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   stopSol(): void {
-    if (this.redirector !== null) {
+    if (this.redirector != null) {
       this.redirector.stop()
       this.handleClearTerminal()
       this.term?.dispose()
