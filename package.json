@@ -34,7 +34,7 @@
     "@angular/cli": "^19.2.13",
     "@angular/common": "^20.0.1",
     "@angular/compiler": "^20.0.1",
-    "@angular/compiler-cli": "^20.0.1",
+    "@angular/compiler-cli": "^20.0.4",
     "@angular/core": "^20.0.1",
     "@angular/platform-browser": "^20.0.1",
     "@angular/platform-browser-dynamic": "^20.0.1",
