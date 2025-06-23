@@ -1,3 +1,19 @@
+# [10.0.0](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v9.1.4...v10.0.0) (2025-06-23)
+
+
+### Code Refactoring
+
+* since inputs are signals, removes EventEmitter ([#1905](https://github.com/device-management-toolkit/ui-toolkit-angular/issues/1905)) ([8194c47](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/8194c479fa5594111184c0ae9f8bef887a67c0ec))
+
+
+### BREAKING CHANGES
+
+* KVM/SOL/IDER inputs are no longer EventEmitters
+
+* build(deps): update angular to v20
+
+* test: update tests to use signals
+
 ## [9.1.4](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v9.1.3...v9.1.4) (2025-05-27)
 
 ### Bug Fixes
