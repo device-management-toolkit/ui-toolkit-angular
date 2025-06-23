@@ -27,19 +27,28 @@ describe('KvmComponent', () => {
   const setup = (): void => {
     fixture = TestBed.createComponent(KVMComponent)
     component = fixture.componentInstance
-    // Set initial inputs via setInput
+    // Set initial inputs via setInput to prevent effect from triggering during setup
+    fixture.componentRef.setInput('deviceConnection', false)
     fixture.componentRef.setInput('mpsServer', '')
-    fixture.componentRef.setInput('authToken', '')
+    fixture.componentRef.setInput('authToken', 'authToken')
     fixture.componentRef.setInput('deviceId', '')
+    fixture.detectChanges()
+
+    // Now enable connection to trigger init
+    fixture.componentRef.setInput('deviceConnection', true)
     fixture.detectChanges()
   }
 
   const asyncSetup = fakeAsync(() => {
     fixture = TestBed.createComponent(KVMComponent)
     component = fixture.componentInstance
+    fixture.componentRef.setInput('deviceConnection', false)
     fixture.componentRef.setInput('mpsServer', 'wss://localhost')
     fixture.componentRef.setInput('authToken', 'authToken')
-    fixture.componentRef.setInput('deviceId', '')
+    fixture.detectChanges()
+
+    fixture.componentRef.setInput('deviceConnection', true) // Enable connection to trigger init
+    fixture.detectChanges()
     tick(4500)
     fixture.detectChanges()
     flush()
@@ -53,17 +62,17 @@ describe('KvmComponent', () => {
     expect(component.mouseHelper).toBeInstanceOf(MouseHelper)
     expect(component.keyboardHelper).toBeInstanceOf(KeyBoardHelper)
     expect(component.dataProcessor).toBeInstanceOf(DataProcessor)
-    expect(component.selected).toEqual(1)
+    expect(component.selected()).toEqual(1)
     expect(component.encodings.length).toEqual(2)
     expect(component.mpsServer()).toBe('')
     expect(component.deviceId()).toBe('')
-    expect(component.authToken()).toBe('')
+    expect(component.authToken()).toBe('authToken')
   })
 
   it('should autoconnect on pageload', () => {
     asyncSetup()
     spyOn<any>(component.redirector, 'start')
-    spyOn(component.keyboardHelper, 'GrabKeyInput')
+    spyOn(component.keyboardHelper!, 'GrabKeyInput')
     expect(component.redirector).not.toBeNull()
     expect(component.mpsServer()).toEqual('wss://localhost')
     expect(component.authToken()).toEqual('authToken')
@@ -72,11 +81,11 @@ describe('KvmComponent', () => {
   it('should reset all the objects once kvm is stopped', () => {
     setup()
     spyOn<any>(component.redirector, 'stop')
-    spyOn(component.keyboardHelper, 'UnGrabKeyInput')
+    spyOn(component.keyboardHelper!, 'UnGrabKeyInput')
     const resetSpy = spyOn(component, 'reset')
     component.stopKvm()
     expect(component.redirector?.stop).toHaveBeenCalled()
-    expect(component.keyboardHelper.UnGrabKeyInput).toHaveBeenCalled()
+    expect(component.keyboardHelper!.UnGrabKeyInput).toHaveBeenCalled()
     expect(resetSpy).toHaveBeenCalled()
   })
 
@@ -84,10 +93,18 @@ describe('KvmComponent', () => {
     setup()
     const stopKvmSpy = spyOn(component, 'stopKvm')
     const autoConnectSpy = spyOn(component, 'autoConnect')
-    component.selectedEncoding().emit(1)
-    tick(1100)
+
+    // First set deviceConnection to true and ensure component is connected
+    fixture.componentRef.setInput('deviceConnection', true)
     fixture.detectChanges()
-    expect(component.selected).toEqual(1)
+    tick()
+
+    // Then change the encoding
+    fixture.componentRef.setInput('selectedEncoding', 2) // Change from default 1 to 2
+    fixture.detectChanges()
+    tick(1100) // Wait for the timer in onEncodingChange
+
+    expect(component.selected()).toEqual(2)
     expect(stopKvmSpy).toHaveBeenCalled()
     expect(autoConnectSpy).toHaveBeenCalled()
     flush()
@@ -103,9 +120,9 @@ describe('KvmComponent', () => {
 
   it('should trigger the core components method on mouse interactions', () => {
     setup()
-    spyOn(component.mouseHelper, 'mousedown')
-    spyOn(component.mouseHelper, 'mouseup')
-    spyOn(component.mouseHelper, 'mousemove')
+    spyOn(component.mouseHelper!, 'mousedown')
+    spyOn(component.mouseHelper!, 'mouseup')
+    spyOn(component.mouseHelper!, 'mousemove')
 
     const event: any = {
       button: 1,
@@ -114,14 +131,14 @@ describe('KvmComponent', () => {
     }
     component.onMousedown(event as MouseEvent)
     expect(component.mouseHelper).not.toBeNull()
-    expect(component.mouseHelper.mousedown).toHaveBeenCalled()
+    expect(component.mouseHelper!.mousedown).toHaveBeenCalled()
 
     component.onMouseup(event as MouseEvent)
     expect(component.mouseHelper).not.toBeNull()
-    expect(component.mouseHelper.mouseup).toHaveBeenCalled()
+    expect(component.mouseHelper!.mouseup).toHaveBeenCalled()
 
     component.onMousemove(event as MouseEvent)
     expect(component.mouseHelper).not.toBeNull()
-    expect(component.mouseHelper.mousemove).toHaveBeenCalled()
+    expect(component.mouseHelper!.mousemove).toHaveBeenCalled()
   })
 })

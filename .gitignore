@@ -3,3 +3,4 @@ node_modules
 dist
 coverage
 *.xml
+*/update_angular.sh
