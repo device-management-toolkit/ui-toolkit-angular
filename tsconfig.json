@@ -4,19 +4,28 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
+    "esModuleInterop": true,
     "sourceMap": true,
     "declaration": false,
     "paths": {
-      "ider": ["dist/ider"],
-      "kvm": ["dist/kvm/kvm", "dist/kvm"]
+      "ider": [
+        "dist/ider"
+      ],
+      "kvm": [
+        "dist/kvm/kvm",
+        "dist/kvm"
+      ]
     },
     "experimentalDecorators": true,
     "strictNullChecks": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
-    "lib": ["ES2022", "dom"],
+    "lib": [
+      "ES2022",
+      "dom"
+    ],
     "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
