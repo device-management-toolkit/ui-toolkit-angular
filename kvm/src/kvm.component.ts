@@ -34,6 +34,10 @@ interface EncodingOption {
   value: number
   viewValue: string
 }
+interface KeyObject {
+  code: number
+  down: boolean
+}
 
 @Component({
   selector: 'amt-kvm',
@@ -43,7 +47,7 @@ interface EncodingOption {
 export class KVMComponent implements OnDestroy {
   private readonly renderer = inject(Renderer2)
   private readonly destroyRef = inject(DestroyRef)
-
+  private KEY_SEQUENCE_DELAY_MS = 10
   readonly canvas = viewChild<ElementRef>('canvas')
   readonly device = viewChild.required<string>('device')
 
@@ -62,6 +66,7 @@ export class KVMComponent implements OnDestroy {
   readonly deviceStatus = output<number>()
   readonly deviceConnection = input<boolean>(false)
   readonly selectedEncoding = input<number>(1)
+  readonly selectedHotkey = input<string>('')
 
   // Component state
   module: AMTDesktop | null = null
@@ -101,6 +106,15 @@ export class KVMComponent implements OnDestroy {
       const encoding = this.selectedEncoding()
       this.selected.set(encoding)
       this.onEncodingChange()
+    })
+
+    // React to selectedHotkey changes
+    effect(() => {
+      const hotkey = this.selectedHotkey()
+      if (hotkey && this.deviceConnection() && this.keyboardHelper) {
+        console.log('KVMComponent: Hotkey triggered:', hotkey)
+        this.sendHotkey(hotkey)
+      }
     })
   }
 
@@ -214,6 +228,149 @@ export class KVMComponent implements OnDestroy {
 
   onMousemove(event: MouseEvent): void {
     this.mouseHelper?.mousemove(event)
+  }
+
+  sendHotkey(hotKeyType: string): void {
+    if (!this.keyboardHelper) {
+      console.warn('KVMComponent: Cannot send hotkey - keyboard helper not available')
+      return
+    }
+
+    const keySequence = this.getKeySequence(hotKeyType)
+    if (keySequence?.keys) {
+      console.log('KVMComponent: Sending hotkey sequence for', hotKeyType)
+      // Send each key in the sequence with a small delay
+      keySequence.keys.forEach((key: KeyObject, index: number) => {
+        setTimeout(() => {
+          // Use the KeyboardHelper's existing handleKeyEvent method
+          // 0 = Up, 1 = Down (from the UpDown enum)
+          const upDown = key.down ? 1 : 0
+
+          // Create a mock keyboard event with the key code
+          const mockEvent = {
+            keyCode: key.code,
+            preventDefault: () => {},
+            stopPropagation: () => {}
+          } as KeyboardEvent
+
+          // Use the existing handleKeyEvent method
+          this.keyboardHelper!.handleKeyEvent(upDown, mockEvent)
+        }, index * this.KEY_SEQUENCE_DELAY_MS) // delay between keys
+      })
+    }
+  }
+
+  private getKeySequence(hotKeyType: string): { keys: KeyObject[] } | null {
+    // Based on the KeyBoardHelper, these are the key codes for various combinations
+    switch (hotKeyType) {
+      case 'ctrl-alt-del':
+        return {
+          keys: [
+            { code: 17, down: true }, // Ctrl down (JS keyCode)
+            { code: 18, down: true }, // Alt down (JS keyCode)
+            { code: 46, down: true }, // Delete down (JS keyCode)
+            { code: 46, down: false }, // Delete up (JS keyCode)
+            { code: 18, down: false }, // Alt up (JS keyCode)
+            { code: 17, down: false } // Ctrl up (JS keyCode)
+          ]
+        }
+      case 'alt-tab':
+        return {
+          keys: [
+            { code: 18, down: true }, // Alt down (JS keyCode)
+            { code: 9, down: true }, // Tab down (JS keyCode)
+            { code: 9, down: false }, // Tab up (JS keyCode)
+            { code: 18, down: false } // Alt up (JS keyCode)
+          ]
+        }
+      case 'alt-release':
+        return {
+          keys: [
+            { code: 18, down: false } // Alt up (JS keyCode)
+          ]
+        }
+      case 'windows':
+        return {
+          keys: [
+            { code: 0xffe7, down: true }, // Windows key down
+            { code: 0xffe7, down: false } // Windows key up
+          ]
+        }
+      case 'windows-l':
+        return {
+          keys: [
+            { code: 0xffe7, down: true }, // Windows down
+            { code: 108, down: true }, // L down
+            { code: 108, down: false }, // L up
+            { code: 0xffe7, down: false } // Windows up
+          ]
+        }
+      case 'windows-r':
+        return {
+          keys: [
+            { code: 0xffe7, down: true }, // Windows down
+            { code: 82, down: true }, // R down
+            { code: 82, down: false }, // R up
+            { code: 0xffe7, down: false } // Windows up
+          ]
+        }
+      case 'windows-up':
+        return {
+          keys: [
+            { code: 0xffe7, down: true }, // Windows down
+            { code: 0xff52, down: true }, // Up arrow down
+            { code: 0xff52, down: false }, // Up arrow up
+            { code: 0xffe7, down: false } // Windows up
+          ]
+        }
+      case 'windows-down':
+        return {
+          keys: [
+            { code: 0xffe7, down: true }, // Windows down
+            { code: 0xff54, down: true }, // Down arrow down
+            { code: 0xff54, down: false }, // Down arrow up
+            { code: 0xffe7, down: false } // Windows up
+          ]
+        }
+      case 'windows-left':
+        return {
+          keys: [
+            { code: 0xffe7, down: true }, // Windows down
+            { code: 0xff51, down: true }, // Left arrow down
+            { code: 0xff51, down: false }, // Left arrow up
+            { code: 0xffe7, down: false } // Windows up
+          ]
+        }
+      case 'windows-right':
+        return {
+          keys: [
+            { code: 0xffe7, down: true }, // Windows down
+            { code: 0xff53, down: true }, // Right arrow down
+            { code: 0xff53, down: false }, // Right arrow up
+            { code: 0xffe7, down: false } // Windows up
+          ]
+        }
+      case 'alt-f4':
+        return {
+          keys: [
+            { code: 0xffe9, down: true }, // Alt down
+            { code: 0xffc1, down: true }, // F4 down (F1 = 0xffbe, so F4 = 0xffc1)
+            { code: 0xffc1, down: false }, // F4 up
+            { code: 0xffe9, down: false } // Alt up
+          ]
+        }
+      case 'ctrl-w':
+        return {
+          keys: [
+            { code: 0xffe3, down: true }, // Ctrl down
+            { code: 87, down: true }, // W down
+            { code: 87, down: false }, // W up
+            { code: 0xffe3, down: false } // Ctrl up
+          ]
+        }
+      default:
+        return null
+    }
   }
 
   ngOnDestroy(): void {
