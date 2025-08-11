@@ -1,9 +1,8 @@
 # [10.1.0](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.0.0...v10.1.0) (2025-07-29)
 
-
 ### Features
 
-* add support for hotkeys ([#1984](https://github.com/device-management-toolkit/ui-toolkit-angular/issues/1984)) ([47ce911](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/47ce9110cbcdf0bb36f99591ce7e06334eda2518))
+- add support for hotkeys ([#1984](https://github.com/device-management-toolkit/ui-toolkit-angular/issues/1984)) ([47ce911](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/47ce9110cbcdf0bb36f99591ce7e06334eda2518))
 
 # [10.0.0](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v9.1.4...v10.0.0) (2025-06-23)
 
