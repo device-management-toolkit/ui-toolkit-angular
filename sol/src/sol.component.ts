@@ -31,7 +31,7 @@ import { TerminalComponent } from './terminal/terminal.component'
   encapsulation: ViewEncapsulation.None,
   imports: [TerminalComponent]
 })
-export class SOLComponent implements OnDestroy, AfterViewInit {
+export class SOLComponent implements OnDestroy {
   private readonly destroyRef = inject(DestroyRef)
 
   terminal: AmtTerminal
@@ -53,23 +53,13 @@ export class SOLComponent implements OnDestroy, AfterViewInit {
       const connected = this.deviceConnection()
       if (connected) {
         if (this.redirector == null) {
-          this.init()
+          this.instantiate()
         }
-      } else {
+        this.startSol()
+      } else if (this.redirector != null) {
         this.stopSol()
       }
     })
-  }
-
-  ngAfterViewInit(): void {
-    this.init()
-  }
-
-  init(): void {
-    this.instantiate()
-    setTimeout(() => {
-      this.startSol()
-    }, 4000)
   }
 
   instantiate(): void {
@@ -121,7 +111,7 @@ export class SOLComponent implements OnDestroy, AfterViewInit {
   }
 
   startSol(): void {
-    if (this.redirector !== null) {
+    if (this.redirector != null) {
       this.redirector.start(WebSocket)
     }
   }
