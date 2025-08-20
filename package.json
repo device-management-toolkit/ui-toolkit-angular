@@ -22,7 +22,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@device-management-toolkit/ui-toolkit": "^3.3.3",
+    "@device-management-toolkit/ui-toolkit": "^3.3.4",
     "@xterm/xterm": "^5.5.0"
   },
   "devDependencies": {
