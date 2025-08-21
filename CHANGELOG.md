@@ -1,3 +1,10 @@
+## [10.1.2](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.1...v10.1.2) (2025-08-21)
+
+
+### Bug Fixes
+
+* address KVM connection issue ([05fc284](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/05fc2848df3da587082bdff2a480583dddb389f6))
+
 ## [10.1.1](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.0...v10.1.1) (2025-08-20)
 
 ### Bug Fixes
