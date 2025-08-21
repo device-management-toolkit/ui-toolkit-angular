@@ -93,7 +93,7 @@ export class KVMComponent implements OnDestroy {
       if (connected && this.redirector == null) {
         console.log('KVMComponent: Device connected, initializing KVM...')
         this.init()
-      } else if (!connected) {
+      } else if (!connected && this.redirector != null) {
         console.log('KVMComponent: Device disconnected, stopping KVM...')
         this.stopKvm()
       }
@@ -209,7 +209,6 @@ export class KVMComponent implements OnDestroy {
     this.dataProcessor = null
     this.height.set(400)
     this.width.set(400)
-    this.instantiate()
   }
 
   stopKvm(): void {

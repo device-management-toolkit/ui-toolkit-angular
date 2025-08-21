@@ -1,9 +1,8 @@
 ## [10.1.1](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.0...v10.1.1) (2025-08-20)
 
-
 ### Bug Fixes
 
-* address instantiation timing issues with SOL ([727f06e](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/727f06e5baed59a358510bfd803866115b8d3b5f))
+- address instantiation timing issues with SOL ([727f06e](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/727f06e5baed59a358510bfd803866115b8d3b5f))
 
 # [10.1.0](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.0.0...v10.1.0) (2025-07-29)
 
