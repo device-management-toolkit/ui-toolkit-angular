@@ -89,7 +89,7 @@ describe('KvmComponent', () => {
     expect(resetSpy).toHaveBeenCalled()
   })
 
-  it('should disconnect the active KVM session if there is an encoding change', fakeAsync(() => {
+  it('should disconnect and reconnect on encoding change (including delayed autoConnect)', fakeAsync(() => {
     setup()
     const stopKvmSpy = spyOn(component, 'stopKvm')
     const autoConnectSpy = spyOn(component, 'autoConnect')
@@ -102,7 +102,8 @@ describe('KvmComponent', () => {
     // Then change the encoding
     fixture.componentRef.setInput('selectedEncoding', 2) // Change from default 1 to 2
     fixture.detectChanges()
-    tick(1100) // Wait for the timer in onEncodingChange
+    // Wait for onEncodingChange timer (1s) + init's autoConnect delay (4s)
+    tick(5100)
 
     expect(component.selected()).toEqual(2)
     expect(stopKvmSpy).toHaveBeenCalled()

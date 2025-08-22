@@ -76,6 +76,7 @@ export class KVMComponent implements OnDestroy {
   keyboardHelper: KeyBoardHelper | null = null
   selected = signal(1)
   private mouseMove$?: Subscription
+  private isEncodingChange = false
 
   readonly encodings: EncodingOption[] = [
     { value: 1, viewValue: 'RLE 8' },
@@ -90,7 +91,7 @@ export class KVMComponent implements OnDestroy {
     // React to deviceConnection changes
     effect(() => {
       const connected = this.deviceConnection()
-      if (connected && this.redirector == null) {
+      if (connected && this.redirector == null && !this.isEncodingChange) {
         console.log('KVMComponent: Device connected, initializing KVM...')
         this.init()
       } else if (!connected && this.redirector != null) {
@@ -105,7 +106,12 @@ export class KVMComponent implements OnDestroy {
       console.log('KVMComponent: Encoding changed to', this.selectedEncoding())
       const encoding = this.selectedEncoding()
       this.selected.set(encoding)
-      this.onEncodingChange()
+
+      // Set flag to prevent connection effect interference
+      if (this.redirector != null) {
+        this.isEncodingChange = true
+        this.onEncodingChange()
+      }
     })
 
     // React to selectedHotkey changes
@@ -199,7 +205,9 @@ export class KVMComponent implements OnDestroy {
   private onEncodingChange(): void {
     this.stopKvm()
     timer(1000).subscribe(() => {
-      this.autoConnect()
+      // Need to reinitialize since stopKvm() reset the redirector to null
+      this.init()
+      // Note: Parent component handles clearing isEncodingChange flag after full process
     })
   }
 
