@@ -25,29 +25,31 @@ describe('SolComponent', () => {
   const setup = (): void => {
     fixture = TestBed.createComponent(SOLComponent)
     component = fixture.componentInstance
-    // Set deviceConnection to false first to prevent immediate effect trigger
+    // Set inputs first
+    fixture.componentRef.setInput('mpsServer', 'wss://localhost')
+    fixture.componentRef.setInput('authToken', 'testToken')
+    fixture.componentRef.setInput('deviceId', 'testDevice')
     fixture.componentRef.setInput('deviceConnection', false)
-    fixture.componentRef.setInput('mpsServer', '')
-    fixture.componentRef.setInput('authToken', '')
-    fixture.componentRef.setInput('deviceId', '')
     fixture.detectChanges()
 
-    // Now enable connection to trigger init
+    // Now enable connection to trigger instantiate and start
     fixture.componentRef.setInput('deviceConnection', true)
     fixture.detectChanges()
   }
 
-  const asyncSetup = fakeAsync(() => {
+  const asyncSetup = (): void => {
     fixture = TestBed.createComponent(SOLComponent)
     component = fixture.componentInstance
     fixture.componentRef.setInput('mpsServer', 'wss://localhost')
     fixture.componentRef.setInput('authToken', 'authToken')
-    fixture.componentRef.setInput('deviceId', '')
-    fixture.componentRef.setInput('deviceConnection', true) // Enable connection to trigger init
-    tick(4500)
+    fixture.componentRef.setInput('deviceId', 'testDevice')
+    fixture.componentRef.setInput('deviceConnection', false)
     fixture.detectChanges()
-    flush()
-  })
+
+    // Enable connection to trigger instantiate and start
+    fixture.componentRef.setInput('deviceConnection', true)
+    fixture.detectChanges()
+  }
 
   it('should create', () => {
     setup()
@@ -111,11 +113,41 @@ describe('SolComponent', () => {
     expect(component.terminal.TermSendKeys).toHaveBeenCalled()
   })
 
-  it('should autoconnect on page load', () => {
+  it('should instantiate redirector when deviceConnection becomes true', () => {
     asyncSetup()
-    spyOn(component.redirector, 'start')
     expect(component.redirector).not.toBeNull()
     expect(component.mpsServer()).toEqual('wss://localhost')
     expect(component.authToken()).toEqual('authToken')
+    expect(component.deviceId()).toEqual('testDevice')
+  })
+
+  it('should call startSol when deviceConnection becomes true', () => {
+    fixture = TestBed.createComponent(SOLComponent)
+    component = fixture.componentInstance
+    fixture.componentRef.setInput('mpsServer', 'wss://localhost')
+    fixture.componentRef.setInput('authToken', 'testToken')
+    fixture.componentRef.setInput('deviceId', 'testDevice')
+    fixture.componentRef.setInput('deviceConnection', false)
+    fixture.detectChanges()
+
+    spyOn(component, 'startSol')
+
+    // Enable connection to trigger effect
+    fixture.componentRef.setInput('deviceConnection', true)
+    fixture.detectChanges()
+
+    expect(component.startSol).toHaveBeenCalled()
+  })
+
+  it('should call stopSol when deviceConnection becomes false', () => {
+    setup() // This sets deviceConnection to true and creates redirector
+
+    spyOn(component, 'stopSol')
+
+    // Disable connection to trigger effect
+    fixture.componentRef.setInput('deviceConnection', false)
+    fixture.detectChanges()
+
+    expect(component.stopSol).toHaveBeenCalled()
   })
 })

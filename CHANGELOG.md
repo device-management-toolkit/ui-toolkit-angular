@@ -1,3 +1,21 @@
+## [10.1.3](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.2...v10.1.3) (2025-08-22)
+
+### Bug Fixes
+
+- addresses encoding change issue ([7045d59](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/7045d5993d9ee51c0c9bd6a9a8953d3b3902740d))
+
+## [10.1.2](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.1...v10.1.2) (2025-08-21)
+
+### Bug Fixes
+
+- address KVM connection issue ([05fc284](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/05fc2848df3da587082bdff2a480583dddb389f6))
+
+## [10.1.1](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.0...v10.1.1) (2025-08-20)
+
+### Bug Fixes
+
+- address instantiation timing issues with SOL ([727f06e](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/727f06e5baed59a358510bfd803866115b8d3b5f))
+
 # [10.1.0](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.0.0...v10.1.0) (2025-07-29)
 
 ### Features
