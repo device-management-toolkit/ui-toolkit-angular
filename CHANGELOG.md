@@ -1,9 +1,8 @@
 ## [10.1.3](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.2...v10.1.3) (2025-08-22)
 
-
 ### Bug Fixes
 
-* addresses encoding change issue ([7045d59](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/7045d5993d9ee51c0c9bd6a9a8953d3b3902740d))
+- addresses encoding change issue ([7045d59](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/7045d5993d9ee51c0c9bd6a9a8953d3b3902740d))
 
 ## [10.1.2](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.1...v10.1.2) (2025-08-21)
 
