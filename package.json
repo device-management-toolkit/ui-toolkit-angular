@@ -36,7 +36,7 @@
     "@angular/compiler": "^20.3.2",
     "@angular/compiler-cli": "^20.3.2",
     "@angular/core": "^20.3.2",
-    "@angular/platform-browser": "^20.3.2",
+    "@angular/platform-browser": "^20.3.3",
     "@angular/platform-browser-dynamic": "^20.3.2",
     "@types/jasmine": "~5.1.9",
     "@types/node": "^24.6.0",
