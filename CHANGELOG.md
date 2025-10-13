@@ -1,3 +1,5 @@
+## [10.1.4](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.3...v10.1.4) (2025-10-13)
+
 ## [10.1.3](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.2...v10.1.3) (2025-08-22)
 
 ### Bug Fixes
