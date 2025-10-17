@@ -37,7 +37,7 @@
     "@angular/compiler-cli": "^20.3.4",
     "@angular/core": "^20.3.4",
     "@angular/platform-browser": "^20.3.4",
-    "@angular/platform-browser-dynamic": "^20.3.4",
+    "@angular/platform-browser-dynamic": "^20.3.6",
     "@types/jasmine": "~5.1.9",
     "@types/node": "^24.8.0",
     "@typescript-eslint/eslint-plugin": "^8.35.0",
