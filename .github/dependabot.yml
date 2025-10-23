@@ -5,6 +5,33 @@ updates:
     directory: '/'
     schedule:
       interval: 'daily'
+    groups:
+      angular-stack:
+        patterns:
+          - '@angular/*'
+          - '@angular-devkit/*'
+          - 'rxjs'
+          - 'zone.js'
+          - 'typescript'
+        update-types:
+          - patch
+          - minor
+    ignore:
+      - dependency-name: '@angular/*'
+        update-types:
+          - version-update:semver-major
+      - dependency-name: '@angular-devkit/*'
+        update-types:
+          - version-update:semver-major
+      - dependency-name: 'rxjs'
+        update-types:
+          - version-update:semver-major
+      - dependency-name: 'zone.js'
+        update-types:
+          - version-update:semver-major
+      - dependency-name: 'typescript'
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: github-actions
     directory: /
