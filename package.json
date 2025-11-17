@@ -26,7 +26,7 @@
     "@xterm/xterm": "^5.5.0"
   },
   "devDependencies": {
-    "@angular-eslint/builder": "^20.5.1",
+    "@angular-eslint/builder": "^20.6.0",
     "@angular-eslint/eslint-plugin": "^20.4.0",
     "@angular-eslint/schematics": "^20.5.0",
     "@angular/build": "^20.3.10",
