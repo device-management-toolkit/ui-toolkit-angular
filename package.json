@@ -38,7 +38,7 @@
     "@angular/core": "^20.3.11",
     "@angular/platform-browser": "^20.3.11",
     "@angular/platform-browser-dynamic": "^20.3.11",
-    "@types/jasmine": "~5.1.12",
+    "@types/jasmine": "~5.1.13",
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.35.0",
     "@typescript-eslint/utils": "^8.47.0",
