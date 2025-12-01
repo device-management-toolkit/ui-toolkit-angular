@@ -26,9 +26,9 @@
     "@xterm/xterm": "^5.5.0"
   },
   "devDependencies": {
-    "@angular-eslint/builder": "^20.5.1",
-    "@angular-eslint/eslint-plugin": "^20.6.0",
-    "@angular-eslint/schematics": "^20.5.0",
+    "@angular-eslint/builder": "^20.7.0",
+    "@angular-eslint/eslint-plugin": "^20.7.0",
+    "@angular-eslint/schematics": "^20.7.0",
     "@angular/build": "^20.3.12",
     "@angular/cdk": "^20.2.14",
     "@angular/cli": "^20.3.12",
@@ -42,7 +42,7 @@
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.35.0",
     "@typescript-eslint/utils": "^8.47.0",
-    "angular-eslint": "20.6.0",
+    "angular-eslint": "20.7.0",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "jasmine-core": "~5.12.1",
