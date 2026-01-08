@@ -1,14 +1,12 @@
 # [11.0.0](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.6...v11.0.0) (2026-01-08)
 
-
-* build(deps)!: upgrade angular to v21 ([#2185](https://github.com/device-management-toolkit/ui-toolkit-angular/issues/2185)) ([c2f7e51](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/c2f7e518b6a6c66ee31a497cba2f4769d9c70c85))
-
+- build(deps)!: upgrade angular to v21 ([#2185](https://github.com/device-management-toolkit/ui-toolkit-angular/issues/2185)) ([c2f7e51](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/c2f7e518b6a6c66ee31a497cba2f4769d9c70c85))
 
 ### BREAKING CHANGES
 
-* Upgraded peer dependency from Angular v20 to v21.
-    Downstream applications may require code changes to support
-    Angular 21 APIs and behaviors.
+- Upgraded peer dependency from Angular v20 to v21.
+  Downstream applications may require code changes to support
+  Angular 21 APIs and behaviors.
 
 Co-authored-by: Mike <michael.johanson@intel.com>
 

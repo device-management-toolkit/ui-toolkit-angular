@@ -5,6 +5,10 @@
   "bugs": {
     "url": "https://github.com/device-management-toolkit/ui-toolkit-angular/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/device-management-toolkit/ui-toolkit-angular.git"
+  },
   "homepage": "https://github.com/device-management-toolkit/ui-toolkit-angular#readme",
   "scripts": {
     "ng": "ng",
