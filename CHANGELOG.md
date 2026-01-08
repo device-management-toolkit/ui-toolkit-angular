@@ -1,3 +1,5 @@
+## [11.0.1](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v11.0.0...v11.0.1) (2026-01-08)
+
 # [11.0.0](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v10.1.6...v11.0.0) (2026-01-08)
 
 - build(deps)!: upgrade angular to v21 ([#2185](https://github.com/device-management-toolkit/ui-toolkit-angular/issues/2185)) ([c2f7e51](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/c2f7e518b6a6c66ee31a497cba2f4769d9c70c85))
