@@ -268,7 +268,21 @@ export class KVMComponent implements OnDestroy {
   }
 
   private getKeySequence(hotKeyType: string): { keys: KeyObject[] } | null {
-    // Based on the KeyBoardHelper, these are the key codes for various combinations
+    // Check for function key patterns (alt-f1 to alt-f12, ctrl-alt-f1 to ctrl-alt-f12)
+    const altFnMatch = hotKeyType.match(/^alt-f(\d+)$/)
+    const ctrlAltFnMatch = hotKeyType.match(/^ctrl-alt-f(\d+)$/)
+
+    if (altFnMatch) {
+      const fnNum = parseInt(altFnMatch[1], 10)
+      return this.buildFunctionKeySequence(fnNum, false)
+    }
+
+    if (ctrlAltFnMatch) {
+      const fnNum = parseInt(ctrlAltFnMatch[1], 10)
+      return this.buildFunctionKeySequence(fnNum, true)
+    }
+
+    // Handle other hotkey combinations
     switch (hotKeyType) {
       case 'ctrl-alt-del':
         return {
@@ -357,15 +371,6 @@ export class KVMComponent implements OnDestroy {
             { code: 0xffe7, down: false } // Windows up
           ]
         }
-      case 'alt-f4':
-        return {
-          keys: [
-            { code: 0xffe9, down: true }, // Alt down
-            { code: 0xffc1, down: true }, // F4 down (F1 = 0xffbe, so F4 = 0xffc1)
-            { code: 0xffc1, down: false }, // F4 up
-            { code: 0xffe9, down: false } // Alt up
-          ]
-        }
       case 'ctrl-w':
         return {
           keys: [
@@ -378,6 +383,38 @@ export class KVMComponent implements OnDestroy {
       default:
         return null
     }
+  }
+
+  private buildFunctionKeySequence(fnNum: number, includeCtrl: boolean): { keys: KeyObject[] } | null {
+    // Validate function key number (F1-F12)
+    if (fnNum < 1 || fnNum > 12) {
+      return null
+    }
+
+    // Calculate function key code: F1 = 0xffbe, F2 = 0xffbf, ..., F12 = 0xffc9
+    const fnKeyCode = 0xffbe + (fnNum - 1)
+    const keys: KeyObject[] = []
+
+    // Add Ctrl if needed
+    if (includeCtrl) {
+      keys.push({ code: 0xffe3, down: true }) // Ctrl down
+    }
+
+    // Add Alt
+    keys.push({ code: 0xffe9, down: true }) // Alt down
+
+    // Add function key press
+    keys.push({ code: fnKeyCode, down: true }) // Fn down
+    keys.push({ code: fnKeyCode, down: false }) // Fn up
+
+    // Release modifiers in reverse order
+    keys.push({ code: 0xffe9, down: false }) // Alt up
+
+    if (includeCtrl) {
+      keys.push({ code: 0xffe3, down: false }) // Ctrl up
+    }
+
+    return { keys }
   }
 
   ngOnDestroy(): void {
