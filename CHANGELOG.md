@@ -1,9 +1,8 @@
 # [11.1.0](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v11.0.1...v11.1.0) (2026-01-27)
 
-
 ### Features
 
-* Added new hotkeys support for ALT+F1-F12 and CTRL+ALT+F1-F12 ([463c352](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/463c35246da7f6e91f01afe331f68e8dee6a6529))
+- Added new hotkeys support for ALT+F1-F12 and CTRL+ALT+F1-F12 ([463c352](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/463c35246da7f6e91f01afe331f68e8dee6a6529))
 
 ## [11.0.1](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v11.0.0...v11.0.1) (2026-01-08)
 
