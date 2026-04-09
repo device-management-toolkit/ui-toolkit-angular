@@ -30,9 +30,10 @@
     "@xterm/xterm": "^6.0.0"
   },
   "overrides": {
-    "@angular/build": {
-      "undici": "^7.24.5"
-    }
+    "@angular-devkit/core": {
+      "ajv": "^8.18.0"
+    },
+    "picomatch": "^4.0.4"
   },
   "devDependencies": {
     "@angular-eslint/builder": "^21.3.1",
