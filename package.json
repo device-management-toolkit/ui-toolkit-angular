@@ -26,7 +26,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@device-management-toolkit/ui-toolkit": "^3.3.10",
+    "@device-management-toolkit/ui-toolkit": "^3.3.12",
     "@xterm/xterm": "^6.0.0"
   },
   "overrides": {
@@ -48,12 +48,12 @@
     "@angular/core": "^21.2.8",
     "@angular/platform-browser": "^21.2.8",
     "@angular/platform-browser-dynamic": "^21.2.8",
+    "@eslint/js": "^10.0.1",
     "@types/jasmine": "~6.0.0",
     "@types/node": "^25.5.2",
     "@typescript-eslint/eslint-plugin": "^8.35.0",
     "@typescript-eslint/utils": "^8.58.1",
     "angular-eslint": "21.3.1",
-    "@eslint/js": "^10.0.1",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "jasmine-core": "~6.1.0",
