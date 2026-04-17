@@ -40,7 +40,7 @@
     "@angular-eslint/eslint-plugin": "^21.3.1",
     "@angular-eslint/schematics": "^21.3.1",
     "@angular/build": "^21.2.7",
-    "@angular/cdk": "^21.2.6",
+    "@angular/cdk": "^21.2.7",
     "@angular/cli": "^21.2.7",
     "@angular/common": "^21.2.9",
     "@angular/compiler": "^21.2.9",
