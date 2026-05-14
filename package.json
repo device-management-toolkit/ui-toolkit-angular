@@ -38,7 +38,7 @@
   "devDependencies": {
     "@angular-eslint/builder": "^21.4.0",
     "@angular-eslint/eslint-plugin": "^21.3.1",
-    "@angular-eslint/schematics": "^21.3.1",
+    "@angular-eslint/schematics": "^21.4.0",
     "@angular/build": "^21.2.10",
     "@angular/cdk": "^21.2.10",
     "@angular/cli": "^21.2.10",
