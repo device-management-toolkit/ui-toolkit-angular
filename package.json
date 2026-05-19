@@ -52,7 +52,7 @@
     "@types/jasmine": "~6.0.0",
     "@types/node": "^25.8.0",
     "@typescript-eslint/eslint-plugin": "^8.35.0",
-    "@typescript-eslint/utils": "^8.59.3",
+    "@typescript-eslint/utils": "^8.59.4",
     "angular-eslint": "21.4.0",
     "eslint": "^10.4.0",
     "eslint-config-prettier": "^10.1.8",
