@@ -58,7 +58,7 @@
     "@eslint/js": "^10.0.1",
     "@types/jasmine": "~6.0.0",
     "@types/node": "^26.1.0",
-    "@typescript-eslint/eslint-plugin": "^8.62.0",
+    "@typescript-eslint/eslint-plugin": "^8.63.0",
     "@typescript-eslint/utils": "^8.62.0",
     "angular-eslint": "21.4.0",
     "eslint": "^10.6.0",
