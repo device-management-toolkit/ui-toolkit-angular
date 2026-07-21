@@ -40,7 +40,14 @@
     "esbuild": "^0.28.1",
     "vite": "^7.3.6",
     "piscina": "^5.2.0",
-    "@babel/core": "^7.29.7"
+    "@babel/core": "^7.29.7",
+    "brace-expansion": "5.0.7",
+    "karma": {
+      "brace-expansion": "1.1.16"
+    },
+    "karma-coverage": {
+      "brace-expansion": "1.1.16"
+    }
   },
   "devDependencies": {
     "@angular-eslint/builder": "^21.4.0",
