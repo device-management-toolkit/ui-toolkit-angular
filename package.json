@@ -52,7 +52,7 @@
     "@angular/platform-browser-dynamic": "^21.2.18",
     "@eslint/js": "^10.0.1",
     "@types/jasmine": "~6.0.0",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.1.2",
     "@typescript-eslint/eslint-plugin": "^8.62.0",
     "@typescript-eslint/utils": "^8.65.0",
     "angular-eslint": "21.4.0",
