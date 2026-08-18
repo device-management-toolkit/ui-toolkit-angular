@@ -10,6 +10,9 @@
     "url": "git+https://github.com/device-management-toolkit/ui-toolkit-angular.git"
   },
   "homepage": "https://github.com/device-management-toolkit/ui-toolkit-angular#readme",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -26,8 +29,35 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@device-management-toolkit/ui-toolkit": "^3.3.19",
+    "@device-management-toolkit/ui-toolkit": "github:device-management-toolkit/ui-toolkit#fix/sol-utf8-decoding",
     "@xterm/xterm": "^6.0.0"
+  },
+  "module": "dist/fesm2022/device-management-toolkit-ui-toolkit-angular.mjs",
+  "typings": "dist/types/device-management-toolkit-ui-toolkit-angular.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./dist/types/device-management-toolkit-ui-toolkit-angular.d.ts",
+      "default": "./dist/fesm2022/device-management-toolkit-ui-toolkit-angular.mjs"
+    },
+    "./ider": {
+      "types": "./dist/types/device-management-toolkit-ui-toolkit-angular-ider.d.ts",
+      "default": "./dist/fesm2022/device-management-toolkit-ui-toolkit-angular-ider.mjs"
+    },
+    "./kvm": {
+      "types": "./dist/types/device-management-toolkit-ui-toolkit-angular-kvm.d.ts",
+      "default": "./dist/fesm2022/device-management-toolkit-ui-toolkit-angular-kvm.mjs"
+    },
+    "./sol": {
+      "types": "./dist/types/device-management-toolkit-ui-toolkit-angular-sol.d.ts",
+      "default": "./dist/fesm2022/device-management-toolkit-ui-toolkit-angular-sol.mjs"
+    }
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "tslib": "^2.3.0"
   },
   "overrides": {
     "@angular-devkit/core": {
