@@ -49,7 +49,7 @@
     "@angular/compiler-cli": "^21.2.21",
     "@angular/core": "^21.2.21",
     "@angular/platform-browser": "^21.2.21",
-    "@angular/platform-browser-dynamic": "^21.2.20",
+    "@angular/platform-browser-dynamic": "^21.2.21",
     "@eslint/js": "^10.0.1",
     "@types/jasmine": "~6.0.0",
     "@types/node": "^26.2.0",
