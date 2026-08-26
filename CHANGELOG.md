@@ -1,3 +1,5 @@
+## [11.1.8](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v11.1.7...v11.1.8) (2026-08-26)
+
 ## [11.1.7](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v11.1.6...v11.1.7) (2026-07-28)
 
 ## [11.1.6](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v11.1.5...v11.1.6) (2026-07-01)
