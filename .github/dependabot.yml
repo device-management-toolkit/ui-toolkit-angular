@@ -11,11 +11,16 @@ updates:
           - '@angular/*'
           - '@angular-devkit/*'
           - 'rxjs'
-          - 'zone.js'
           - 'typescript'
         update-types:
           - patch
           - minor
+      # vitest and its plugins peer-depend on the same 4.x line; bump together.
+      vitest:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
+          - 'playwright'
     ignore:
       - dependency-name: '@angular/*'
         update-types:
@@ -24,9 +29,6 @@ updates:
         update-types:
           - version-update:semver-major
       - dependency-name: 'rxjs'
-        update-types:
-          - version-update:semver-major
-      - dependency-name: 'zone.js'
         update-types:
           - version-update:semver-major
       - dependency-name: 'typescript'

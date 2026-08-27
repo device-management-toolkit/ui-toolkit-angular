@@ -1,6 +1,7 @@
-import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { AMTRedirector, AmtTerminal } from '@device-management-toolkit/ui-toolkit/core'
 import { Terminal } from '@xterm/xterm'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { SOLComponent } from './sol.component'
 
@@ -20,6 +21,14 @@ describe('SolComponent', () => {
         }
       ]
     }).compileComponents()
+
+    // Prevent the component from opening a real WebSocket to wss://localhost when
+    // deviceConnection is set to true (startSol -> redirector.start(WebSocket)).
+    vi.spyOn(AMTRedirector.prototype, 'start').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   const setup = (): void => {
@@ -61,10 +70,10 @@ describe('SolComponent', () => {
 
   it('should stop the websocket and dispose terminal on sol stop', () => {
     setup()
-    const redirectorSpy = spyOn(AMTRedirector.prototype, 'stop')
-    const cleanupSpy = spyOn(component, 'cleanup')
-    const handleClearTerminalSpy = spyOn(component, 'handleClearTerminal')
-    const disposeSpy = spyOn(Terminal.prototype, 'dispose')
+    const redirectorSpy = vi.spyOn(AMTRedirector.prototype, 'stop').mockImplementation(() => {})
+    const cleanupSpy = vi.spyOn(component, 'cleanup').mockImplementation(() => {})
+    const handleClearTerminalSpy = vi.spyOn(component, 'handleClearTerminal').mockImplementation(() => {})
+    const disposeSpy = vi.spyOn(Terminal.prototype, 'dispose').mockImplementation(() => {})
     component.stopSol()
 
     expect(component.redirector).not.toBeNull()
@@ -76,10 +85,10 @@ describe('SolComponent', () => {
 
   it('should update the terminal state on terminal state change', () => {
     setup()
-    spyOn(component.deviceStatus, 'emit')
+    const emitSpy = vi.spyOn(component.deviceStatus, 'emit').mockImplementation(() => {})
     const state = 0
     component.onTerminalStateChange(component.redirector, state)
-    expect(component.deviceStatus.emit).toHaveBeenCalled()
+    expect(emitSpy).toHaveBeenCalled()
     expect(component.deviceState).toEqual(state)
   })
 
@@ -95,22 +104,22 @@ describe('SolComponent', () => {
 
   it('should write the string to xterm on write function is called', () => {
     setup()
-    spyOn(component.term, 'write')
+    const writeSpy = vi.spyOn(component.term, 'write').mockImplementation(() => {})
 
     const xtermString = 'serialOverLAN'
     component.handleWriteToXterm(xtermString)
-    expect(component.term.write).toHaveBeenCalled()
+    expect(writeSpy).toHaveBeenCalled()
   })
 
   it('should send the keypress event to the core function', () => {
     setup()
-    spyOn(component.terminal, 'TermSendKeys')
+    const termSendKeysSpy = vi.spyOn(component.terminal, 'TermSendKeys').mockImplementation(() => {})
 
     const domEvent = {
       code: 'A'
     }
     component.handleKeyPress(domEvent)
-    expect(component.terminal.TermSendKeys).toHaveBeenCalled()
+    expect(termSendKeysSpy).toHaveBeenCalled()
   })
 
   it('should instantiate redirector when deviceConnection becomes true', () => {
@@ -130,24 +139,24 @@ describe('SolComponent', () => {
     fixture.componentRef.setInput('deviceConnection', false)
     fixture.detectChanges()
 
-    spyOn(component, 'startSol')
+    const startSolSpy = vi.spyOn(component, 'startSol').mockImplementation(() => {})
 
     // Enable connection to trigger effect
     fixture.componentRef.setInput('deviceConnection', true)
     fixture.detectChanges()
 
-    expect(component.startSol).toHaveBeenCalled()
+    expect(startSolSpy).toHaveBeenCalled()
   })
 
   it('should call stopSol when deviceConnection becomes false', () => {
     setup() // This sets deviceConnection to true and creates redirector
 
-    spyOn(component, 'stopSol')
+    const stopSolSpy = vi.spyOn(component, 'stopSol').mockImplementation(() => {})
 
     // Disable connection to trigger effect
     fixture.componentRef.setInput('deviceConnection', false)
     fixture.detectChanges()
 
-    expect(component.stopSol).toHaveBeenCalled()
+    expect(stopSolSpy).toHaveBeenCalled()
   })
 })
