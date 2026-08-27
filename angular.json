@@ -25,18 +25,39 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "codeCoverage": true,
-            "main": "test.ts",
+            "buildTarget": "ui-toolkit-angular:build",
+            "runner": "vitest",
             "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js"
+            "browsers": [
+              "chromium"
+            ],
+            "headless": true,
+            "coverage": true,
+            "coverageReporters": [
+              "html",
+              "text-summary",
+              "lcov"
+            ],
+            "reporters": [
+              "default",
+              [
+                "junit",
+                {
+                  "outputFile": "ui-toolkit-angular.xml"
+                }
+              ]
+            ]
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["**/*.ts", "**/*.html"]
+            "lintFilePatterns": [
+              "**/*.ts",
+              "**/*.html"
+            ]
           }
         }
       }

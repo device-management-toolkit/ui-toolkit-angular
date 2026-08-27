@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { IDERComponent } from './ider.component'
 import { AMTRedirector, AMTIDER } from '@device-management-toolkit/ui-toolkit/core'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('IderComponent', () => {
   let component: IDERComponent
@@ -24,6 +25,13 @@ describe('IderComponent', () => {
     // Initialize with deviceConnection = false to avoid triggering effect during setup
     fixture.componentRef.setInput('deviceConnection', false)
     fixture.detectChanges()
+
+    // Never let a spec open a real WebSocket to the MPS server.
+    vi.spyOn(AMTRedirector.prototype, 'start').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('should create', () => {
@@ -49,45 +57,49 @@ describe('IderComponent', () => {
   })
 
   it('should emit device status', () => {
-    spyOn(component.deviceStatus, 'emit')
+    const emitSpy = vi.spyOn(component.deviceStatus, 'emit').mockImplementation(() => {})
     component.onConnectionStateChange(component.redirector, 1)
-    expect(component.deviceStatus.emit).toHaveBeenCalledWith(1)
+    expect(emitSpy).toHaveBeenCalledWith(1)
   })
 
   it('should call init when deviceConnection is true', () => {
-    spyOn(component, 'init')
+    const initSpy = vi.spyOn(component, 'init').mockImplementation(() => {})
     fixture.componentRef.setInput('deviceConnection', true)
     fixture.detectChanges()
-    expect(component.init).toHaveBeenCalled()
+    expect(initSpy).toHaveBeenCalled()
   })
 
   it('should call stopIder when deviceConnection is false', () => {
-    spyOn(component, 'stopIder')
+    // Stub init so it only instantiates: the real init() schedules a 4s setTimeout
+    // that would call startIder() long after this spec has finished.
+    vi.spyOn(component, 'init').mockImplementation(() => {
+      component.instantiate()
+    })
+    const stopIderSpy = vi.spyOn(component, 'stopIder').mockImplementation(() => {})
 
     // First set deviceConnection to true to initialize
     fixture.componentRef.setInput('deviceConnection', true)
     fixture.detectChanges()
 
-    // Set up a mock redirector so the effect will call stopIder
-    component.redirector = {} as any
+    expect(component.redirector).toBeInstanceOf(AMTRedirector)
 
     // Then set deviceConnection to false
     fixture.componentRef.setInput('deviceConnection', false)
     fixture.detectChanges()
 
-    expect(component.stopIder).toHaveBeenCalled()
+    expect(stopIderSpy).toHaveBeenCalled()
   })
 
   it('should emit updated iderData', () => {
-    spyOn(component.iderData, 'emit')
+    const emitSpy = vi.spyOn(component.iderData, 'emit').mockImplementation(() => {})
     component.instantiate()
     component.iderSectorStats(1, 0, 0, 0, 2)
-    expect(component.iderData.emit).toHaveBeenCalled()
+    expect(emitSpy).toHaveBeenCalled()
   })
 
   it('should stop ider', () => {
-    const redirectorSpy = spyOn(AMTRedirector.prototype, 'stop')
-    const cleanupSpy = spyOn(component, 'cleanup')
+    const redirectorSpy = vi.spyOn(AMTRedirector.prototype, 'stop').mockImplementation(() => {})
+    const cleanupSpy = vi.spyOn(component, 'cleanup').mockImplementation(() => {})
     component.instantiate()
     component.stopIder()
 
@@ -98,7 +110,7 @@ describe('IderComponent', () => {
   })
 
   it('should stop ider on destroy', () => {
-    const stopSpy = spyOn(AMTIDER.prototype, 'stop')
+    const stopSpy = vi.spyOn(AMTIDER.prototype, 'stop').mockImplementation(() => {})
     component.instantiate()
     component.ngOnDestroy()
     expect(stopSpy).toHaveBeenCalled()
