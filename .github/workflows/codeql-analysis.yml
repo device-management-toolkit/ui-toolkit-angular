@@ -84,8 +84,11 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4.37.8
       - name: Generate Security Report
-        uses: rsdmike/github-security-report-action@1df22b1e0a7e15b32f728ccf7bab259e46c80589 # v4.0.1
-        continue-on-error: true
+        # SECURITY_TOKEN is not exposed to pull requests from forks, so the step cannot
+        # run there. Skip it rather than fail the job on external contributions; on
+        # trusted events a failure here is intentionally not suppressed.
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: rsdmike/github-security-report-action@a3d8cc051bc89f1b622d396adab901aa73857a29 # v4.1.0
         with:
           template: report
           token: ${{ secrets.SECURITY_TOKEN }}
