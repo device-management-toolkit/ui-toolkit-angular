@@ -38,7 +38,7 @@
     "@hono/node-server": "^2.0.11"
   },
   "devDependencies": {
-    "@angular-eslint/builder": "^21.4.0",
+    "@angular-eslint/builder": "^22.2.0",
     "@angular-eslint/eslint-plugin": "^21.3.1",
     "@angular-eslint/schematics": "^22.2.0",
     "@angular/build": "^21.2.22",
