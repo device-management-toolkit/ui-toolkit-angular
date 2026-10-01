@@ -58,7 +58,7 @@
     "angular-eslint": "22.5.0",
     "eslint": "^10.11.0",
     "eslint-config-prettier": "^10.1.8",
-    "ng-packagr": "^21.2.3",
+    "ng-packagr": "^22.2.2",
     "playwright": "^1.62.1",
     "prettier-config-standard": "^7.0.0",
     "prettier-plugin-multiline-arrays": "^4.1.11",
