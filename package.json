@@ -41,7 +41,7 @@
     "@angular-eslint/builder": "^22.5.0",
     "@angular-eslint/eslint-plugin": "^22.5.0",
     "@angular-eslint/schematics": "^22.5.0",
-    "@angular/build": "^21.2.24",
+    "@angular/build": "^21.2.25",
     "@angular/cdk": "^21.2.14",
     "@angular/cli": "^21.2.24",
     "@angular/common": "^21.2.25",
