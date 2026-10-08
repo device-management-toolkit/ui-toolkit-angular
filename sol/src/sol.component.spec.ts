@@ -89,7 +89,17 @@ describe('SolComponent', () => {
     const state = 0
     component.onTerminalStateChange(component.redirector, state)
     expect(emitSpy).toHaveBeenCalled()
-    expect(component.deviceState).toEqual(state)
+    expect(component.deviceState()).toEqual(state)
+  })
+
+  it('should render the terminal once the device is connected', () => {
+    setup()
+    expect(fixture.nativeElement.querySelector('amt-terminal')).toBeNull()
+
+    component.onTerminalStateChange(component.redirector, 3)
+    fixture.detectChanges()
+
+    expect(fixture.nativeElement.querySelector('amt-terminal')).not.toBeNull()
   })
 
   it('should set null values to the core objects on cleanup', () => {

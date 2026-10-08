@@ -81,6 +81,13 @@ describe('KvmComponent', () => {
     expect(component.authToken()).toBe('authToken')
   })
 
+  it('should size the canvas from the width and height signals', () => {
+    setup()
+    const canvas: HTMLCanvasElement = fixture.nativeElement.querySelector('canvas')
+    expect(canvas.width).toEqual(400)
+    expect(canvas.height).toEqual(400)
+  })
+
   it('should autoconnect on pageload', async () => {
     const { startSpy, grabKeyInputSpy } = await asyncSetup()
     expect(component.redirector).toBeInstanceOf(AMTRedirector)

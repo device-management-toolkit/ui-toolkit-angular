@@ -1,5 +1,5 @@
 <div class="container">
-  @if (deviceState === 3) {
+  @if (deviceState() === 3) {
     <amt-terminal [term]="term" (handleKeyPress)="handleKeyPress($event)"></amt-terminal>
   }
 </div>

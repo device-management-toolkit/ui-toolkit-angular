@@ -2,21 +2,12 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "esModuleInterop": true,
     "sourceMap": true,
     "declaration": false,
-    "paths": {
-      "ider": [
-        "dist/ider"
-      ],
-      "kvm": [
-        "dist/kvm/kvm",
-        "dist/kvm"
-      ]
-    },
     "experimentalDecorators": true,
+    "strict": false,
     "strictNullChecks": true,
     "moduleResolution": "bundler",
     "importHelpers": true,

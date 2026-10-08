@@ -2,8 +2,8 @@
   <canvas
     class="canvas"
     #canvas
-    [width]="width"
-    [height]="height"
+    [width]="width()"
+    [height]="height()"
     oncontextmenu="return false"
     (mouseup)="onMouseup($event)"
     (mousedown)="onMousedown($event)"

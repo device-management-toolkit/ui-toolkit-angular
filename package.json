@@ -26,8 +26,10 @@
     "access": "public"
   },
   "peerDependencies": {
+    "@angular/core": "^21.0.0 || ^22.0.0",
     "@device-management-toolkit/ui-toolkit": "^3.3.21",
-    "@xterm/xterm": "^6.0.0"
+    "@xterm/xterm": "^6.0.0",
+    "rxjs": "^7.4.0"
   },
   "overrides": {
     "@angular-devkit/core": {
@@ -41,14 +43,14 @@
     "@angular-eslint/builder": "^22.5.0",
     "@angular-eslint/eslint-plugin": "^22.5.0",
     "@angular-eslint/schematics": "^22.5.0",
-    "@angular/build": "^21.2.25",
-    "@angular/cdk": "^21.2.14",
-    "@angular/cli": "^21.2.24",
-    "@angular/common": "^21.2.25",
-    "@angular/compiler": "^21.2.25",
-    "@angular/compiler-cli": "^21.2.25",
-    "@angular/core": "^21.2.25",
-    "@angular/platform-browser": "^21.2.25",
+    "@angular/build": "^22.2.2",
+    "@angular/cdk": "^22.2.2",
+    "@angular/cli": "^22.2.2",
+    "@angular/common": "^22.2.2",
+    "@angular/compiler": "^22.2.2",
+    "@angular/compiler-cli": "^22.2.2",
+    "@angular/core": "^22.2.2",
+    "@angular/platform-browser": "^22.2.2",
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.6.4",
     "@typescript-eslint/eslint-plugin": "^8.68.0",
@@ -58,14 +60,14 @@
     "angular-eslint": "22.5.0",
     "eslint": "^10.12.0",
     "eslint-config-prettier": "^10.1.8",
-    "ng-packagr": "^21.2.3",
+    "ng-packagr": "^22.2.4",
     "playwright": "^1.62.1",
     "prettier-config-standard": "^7.0.0",
     "prettier-plugin-multiline-arrays": "^4.1.11",
     "rxjs": "~7.8.2",
     "ts-node": "~10.9.2",
     "tslib": "^2.8.1",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.0",
     "vitest": "^4.1.11"
   }

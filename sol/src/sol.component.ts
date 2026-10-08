@@ -11,7 +11,8 @@ import {
   output,
   inject,
   DestroyRef,
-  effect
+  effect,
+  signal
 } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Terminal } from '@xterm/xterm'
@@ -39,7 +40,7 @@ export class SOLComponent implements OnDestroy {
   term: Terminal
   redirector: AMTRedirector
   dataProcessor: TerminalDataProcessor
-  deviceState = 0
+  readonly deviceState = signal(0)
 
   readonly deviceStatus = output<number>()
   readonly deviceConnection = input<boolean>(false)
@@ -107,7 +108,7 @@ export class SOLComponent implements OnDestroy {
 
   onTerminalStateChange(redirector: AMTRedirector, state: number): void {
     this.deviceStatus.emit(state)
-    this.deviceState = state
+    this.deviceState.set(state)
   }
 
   startSol(): void {
