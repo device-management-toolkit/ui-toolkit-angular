@@ -11,7 +11,8 @@ import {
   output,
   inject,
   DestroyRef,
-  effect
+  effect,
+  signal
 } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Terminal } from '@xterm/xterm'
@@ -34,12 +35,13 @@ import { TerminalComponent } from './terminal/terminal.component'
 export class SOLComponent implements OnDestroy {
   private readonly destroyRef = inject(DestroyRef)
 
-  terminal: AmtTerminal
+  terminal: AmtTerminal | null = null
   container!: any
-  term: Terminal
-  redirector: AMTRedirector
-  dataProcessor: TerminalDataProcessor
-  deviceState = 0
+  term: Terminal | null = null
+  redirector: AMTRedirector | null = null
+  dataProcessor: TerminalDataProcessor | null = null
+  private readonly _deviceState = signal(0)
+  readonly deviceState = this._deviceState.asReadonly()
 
   readonly deviceStatus = output<number>()
   readonly deviceConnection = input<boolean>(false)
@@ -107,7 +109,7 @@ export class SOLComponent implements OnDestroy {
 
   onTerminalStateChange(redirector: AMTRedirector, state: number): void {
     this.deviceStatus.emit(state)
-    this.deviceState = state
+    this._deviceState.set(state)
   }
 
   startSol(): void {
@@ -126,10 +128,10 @@ export class SOLComponent implements OnDestroy {
   }
 
   cleanup(): void {
-    ;(this.terminal as any) = null
-    ;(this.redirector as any) = null
-    ;(this.dataProcessor as any) = null
-    ;(this.term as any) = null
+    this.terminal = null
+    this.redirector = null
+    this.dataProcessor = null
+    this.term = null
   }
 
   ngOnDestroy(): void {

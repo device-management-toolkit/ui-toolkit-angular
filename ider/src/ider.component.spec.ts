@@ -58,8 +58,10 @@ describe('IderComponent', () => {
 
   it('should emit device status', () => {
     const emitSpy = vi.spyOn(component.deviceStatus, 'emit').mockImplementation(() => {})
+    expect(component.deviceState()).toEqual(0)
     component.onConnectionStateChange(component.redirector, 1)
     expect(emitSpy).toHaveBeenCalledWith(1)
+    expect(component.deviceState()).toEqual(1)
   })
 
   it('should call init when deviceConnection is true', () => {
