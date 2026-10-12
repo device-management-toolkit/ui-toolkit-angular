@@ -1,3 +1,15 @@
+# [12.0.0](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v11.1.9...v12.0.0) (2026-10-12)
+
+
+* build(deps)!: upgrade angular to v22 ([#2661](https://github.com/device-management-toolkit/ui-toolkit-angular/issues/2661)) ([b667882](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/b667882365c2eabb1b12aec4a08c2fb8bffb0a3e)), closes [#2636](https://github.com/device-management-toolkit/ui-toolkit-angular/issues/2636)
+
+
+### BREAKING CHANGES
+
+* SOLComponent.deviceState and IDERComponent.deviceState
+    are now read-only signals. Read them as deviceState() instead of
+    deviceState.
+
 ## [11.1.9](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v11.1.8...v11.1.9) (2026-09-21)
 
 ## [11.1.8](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v11.1.7...v11.1.8) (2026-08-26)
