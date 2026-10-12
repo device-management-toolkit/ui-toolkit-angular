@@ -1,4 +1,4 @@
-import { Component, OnDestroy, input, output, inject, DestroyRef, effect } from '@angular/core'
+import { Component, OnDestroy, input, output, inject, DestroyRef, effect, signal } from '@angular/core'
 import { AMTRedirector, Protocol, AMTIDER, RedirectorConfig } from '@device-management-toolkit/ui-toolkit/core'
 
 export interface IDERData {
@@ -16,10 +16,11 @@ export interface IDERData {
 export class IDERComponent implements OnDestroy {
   private readonly destroyRef = inject(DestroyRef)
 
-  redirector: AMTRedirector | null
-  ider: AMTIDER | null
-  data: IDERData | null
-  deviceState = 0
+  redirector: AMTRedirector | null = null
+  ider: AMTIDER | null = null
+  data: IDERData | null = null
+  private readonly _deviceState = signal(0)
+  readonly deviceState = this._deviceState.asReadonly()
 
   readonly deviceStatus = output<number>()
   readonly iderData = output<IDERData>()
@@ -111,6 +112,7 @@ export class IDERComponent implements OnDestroy {
 
   onConnectionStateChange = (redirector: any, state: number): any => {
     this.deviceStatus.emit(state)
+    this._deviceState.set(state)
   }
 
   stopIder(): void {

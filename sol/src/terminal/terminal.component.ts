@@ -9,12 +9,9 @@ import { Terminal } from '@xterm/xterm'
   templateUrl: './terminal.component.html'
 })
 export class TerminalComponent implements OnInit {
-  // TODO: Notes from signal input migration:
-  //  Input is initialized to `undefined` but type does not allow this value.
-  //  This worked with `@Input` because your project uses `--strictPropertyInitialization=false`.
-  readonly term = input<Terminal>(undefined!)
+  readonly term = input.required<Terminal>()
   readonly handleKeyPress = output<any>()
-  container!: HTMLElement | null
+  container: HTMLElement | null = null
   ngOnInit(): void {
     const term = this.term()
     if (term == null) throw new Error('Terminal not found')

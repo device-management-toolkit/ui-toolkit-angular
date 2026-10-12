@@ -87,9 +87,19 @@ describe('SolComponent', () => {
     setup()
     const emitSpy = vi.spyOn(component.deviceStatus, 'emit').mockImplementation(() => {})
     const state = 0
-    component.onTerminalStateChange(component.redirector, state)
+    component.onTerminalStateChange(component.redirector!, state)
     expect(emitSpy).toHaveBeenCalled()
-    expect(component.deviceState).toEqual(state)
+    expect(component.deviceState()).toEqual(state)
+  })
+
+  it('should render the terminal once the device is connected', () => {
+    setup()
+    expect(fixture.nativeElement.querySelector('amt-terminal')).toBeNull()
+
+    component.onTerminalStateChange(component.redirector!, 3)
+    fixture.detectChanges()
+
+    expect(fixture.nativeElement.querySelector('amt-terminal')).not.toBeNull()
   })
 
   it('should set null values to the core objects on cleanup', () => {
@@ -104,7 +114,7 @@ describe('SolComponent', () => {
 
   it('should write the string to xterm on write function is called', () => {
     setup()
-    const writeSpy = vi.spyOn(component.term, 'write').mockImplementation(() => {})
+    const writeSpy = vi.spyOn(component.term!, 'write').mockImplementation(() => {})
 
     const xtermString = 'serialOverLAN'
     component.handleWriteToXterm(xtermString)
@@ -113,7 +123,7 @@ describe('SolComponent', () => {
 
   it('should send the keypress event to the core function', () => {
     setup()
-    const termSendKeysSpy = vi.spyOn(component.terminal, 'TermSendKeys').mockImplementation(() => {})
+    const termSendKeysSpy = vi.spyOn(component.terminal!, 'TermSendKeys').mockImplementation(() => {})
 
     const domEvent = {
       code: 'A'

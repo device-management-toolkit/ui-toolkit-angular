@@ -2,22 +2,11 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "esModuleInterop": true,
     "sourceMap": true,
     "declaration": false,
-    "paths": {
-      "ider": [
-        "dist/ider"
-      ],
-      "kvm": [
-        "dist/kvm/kvm",
-        "dist/kvm"
-      ]
-    },
     "experimentalDecorators": true,
-    "strictNullChecks": true,
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
