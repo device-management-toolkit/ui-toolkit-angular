@@ -1,6 +1,6 @@
 {
   "name": "@device-management-toolkit/ui-toolkit-angular",
-  "version": "11.1.9",
+  "version": "12.0.1",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/device-management-toolkit/ui-toolkit-angular/issues"
@@ -26,7 +26,7 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@device-management-toolkit/ui-toolkit": "^3.3.21",
+    "@device-management-toolkit/ui-toolkit": "^3.3.22",
     "@xterm/xterm": "^6.0.0",
     "rxjs": "^7.4.0"
   },
