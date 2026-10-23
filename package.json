@@ -31,11 +31,9 @@
     "rxjs": "^7.4.0"
   },
   "overrides": {
-    "@angular-devkit/core": {
-      "ajv": "^8.18.0"
-    },
-    "picomatch": "^4.0.4",
-    "@hono/node-server": "^2.0.11"
+    "@angular/build": {
+      "vite": "~8.3.3"
+    }
   },
   "devDependencies": {
     "@angular-eslint/builder": "^22.5.0",
