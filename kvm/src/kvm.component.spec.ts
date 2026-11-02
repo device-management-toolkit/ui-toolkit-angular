@@ -6,13 +6,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { KVMComponent } from './kvm.component'
-import {
-  AMTDesktop,
-  AMTRedirector,
-  DataProcessor,
-  KeyBoardHelper,
-  MouseHelper
-} from '@device-management-toolkit/ui-toolkit/core'
+import { KeyBoardHelper, KvmViewer } from '@device-management-toolkit/ui-toolkit/core'
 
 describe('KvmComponent', () => {
   let component: KVMComponent
@@ -54,12 +48,13 @@ describe('KvmComponent', () => {
     fixture.componentRef.setInput('deviceConnection', false)
     fixture.componentRef.setInput('mpsServer', 'wss://localhost')
     fixture.componentRef.setInput('authToken', 'authToken')
+    fixture.componentRef.setInput('deviceId', 'device-guid')
     fixture.detectChanges()
 
     fixture.componentRef.setInput('deviceConnection', true) // Enable connection to trigger init
     fixture.detectChanges()
     // Stub the socket handshake before the delayed autoConnect fires
-    const startSpy = vi.spyOn(component.redirector as any, 'start').mockImplementation(() => {})
+    const startSpy = vi.spyOn(component.viewer!, 'start').mockImplementation(() => {})
     const grabKeyInputSpy = vi.spyOn(component.keyboardHelper!, 'GrabKeyInput').mockImplementation(() => {})
     await vi.advanceTimersByTimeAsync(4500)
     fixture.detectChanges()
@@ -69,11 +64,9 @@ describe('KvmComponent', () => {
   it('should create', () => {
     setup()
     expect(component).toBeTruthy()
-    expect(component.redirector).toBeInstanceOf(AMTRedirector)
-    expect(component.module).toBeInstanceOf(AMTDesktop)
-    expect(component.mouseHelper).toBeInstanceOf(MouseHelper)
+    expect(component.viewer).toBeInstanceOf(KvmViewer)
     expect(component.keyboardHelper).toBeInstanceOf(KeyBoardHelper)
-    expect(component.dataProcessor).toBeInstanceOf(DataProcessor)
+    expect(component.sessionActive).toBe(true)
     expect(component.selected()).toEqual(1)
     expect(component.encodings.length).toEqual(2)
     expect(component.mpsServer()).toBe('')
@@ -81,31 +74,65 @@ describe('KvmComponent', () => {
     expect(component.authToken()).toBe('authToken')
   })
 
-  it('should size the canvas from the width and height signals', () => {
+  it('should leave canvas sizing to the viewer when screen size signals change', () => {
     setup()
     const canvas: HTMLCanvasElement = fixture.nativeElement.querySelector('canvas')
-    expect(canvas.width).toEqual(400)
-    expect(canvas.height).toEqual(400)
+    const { width, height } = canvas
+    component.viewer!.onScreenSizeChange!(1920, 1080)
+    fixture.detectChanges()
+    expect(canvas.width).toEqual(width)
+    expect(canvas.height).toEqual(height)
   })
 
   it('should autoconnect on pageload', async () => {
     const { startSpy, grabKeyInputSpy } = await asyncSetup()
-    expect(component.redirector).toBeInstanceOf(AMTRedirector)
     expect(component.mpsServer()).toEqual('wss://localhost')
     expect(component.authToken()).toEqual('authToken')
-    expect(startSpy).toHaveBeenCalled()
+    expect(startSpy).toHaveBeenCalledWith({
+      server: 'wss://localhost',
+      deviceId: 'device-guid',
+      authToken: 'authToken',
+      bpp: 1
+    })
     expect(grabKeyInputSpy).toHaveBeenCalled()
+  })
+
+  it('should emit the connection state reported by the viewer', () => {
+    setup()
+    const emitSpy = vi.spyOn(component.deviceStatus, 'emit')
+    component.viewer!.onConnectionStateChange!(2)
+    expect(emitSpy).toHaveBeenCalledWith(2)
+  })
+
+  it('should track the remote screen size', () => {
+    setup()
+    component.viewer!.onScreenSizeChange!(1920, 1080)
+    expect(component.width()).toBe(1920)
+    expect(component.height()).toBe(1080)
   })
 
   it('should reset all the objects once kvm is stopped', () => {
     setup()
-    const stopSpy = vi.spyOn(component.redirector as any, 'stop').mockImplementation(() => {})
+    const stopSpy = vi.spyOn(component.viewer!, 'stop').mockImplementation(() => {})
     const unGrabSpy = vi.spyOn(component.keyboardHelper!, 'UnGrabKeyInput').mockImplementation(() => {})
     const resetSpy = vi.spyOn(component, 'reset').mockImplementation(() => {})
     component.stopKvm()
     expect(stopSpy).toHaveBeenCalled()
     expect(unGrabSpy).toHaveBeenCalled()
     expect(resetSpy).toHaveBeenCalled()
+  })
+
+  it('should keep the viewer across sessions and dispose it on destroy', () => {
+    setup()
+    const viewer = component.viewer!
+    component.stopKvm()
+    expect(component.sessionActive).toBe(false)
+    component.instantiate()
+    expect(component.viewer).toBe(viewer)
+    const disposeSpy = vi.spyOn(viewer, 'dispose')
+    fixture.destroy()
+    expect(disposeSpy).toHaveBeenCalled()
+    expect(component.viewer).toBeNull()
   })
 
   it('should disconnect and reconnect on encoding change (including delayed autoConnect)', async () => {
@@ -129,36 +156,33 @@ describe('KvmComponent', () => {
     expect(autoConnectSpy).toHaveBeenCalled()
   })
 
-  it('should reset and re-instantiate the core objects on error', () => {
+  it('should reset the session on error', () => {
     setup()
     const resetSpy = vi.spyOn(component, 'reset').mockImplementation(() => {})
-    component.onRedirectorError()
+    component.viewer!.onError!('Invalid tile size')
 
     expect(resetSpy).toHaveBeenCalled()
   })
 
-  it('should trigger the core components method on mouse interactions', () => {
+  it('should forward mouse interactions to the viewer', () => {
     setup()
-    const mousedownSpy = vi.spyOn(component.mouseHelper!, 'mousedown').mockImplementation(() => {})
-    const mouseupSpy = vi.spyOn(component.mouseHelper!, 'mouseup').mockImplementation(() => {})
-    const mousemoveSpy = vi.spyOn(component.mouseHelper!, 'mousemove').mockReturnValue(false)
+    const mousedownSpy = vi.spyOn(component.viewer!, 'mousedown').mockReturnValue(false)
+    const mouseupSpy = vi.spyOn(component.viewer!, 'mouseup').mockReturnValue(false)
+    const mousemoveSpy = vi.spyOn(component.viewer!, 'mousemove').mockReturnValue(false)
 
     const event: any = {
       button: 1,
-      pageX: 100,
-      pageY: 211
+      clientX: 100,
+      clientY: 211
     }
     component.onMousedown(event as MouseEvent)
-    expect(component.mouseHelper).not.toBeNull()
-    expect(mousedownSpy).toHaveBeenCalled()
+    expect(mousedownSpy).toHaveBeenCalledWith(event)
 
     component.onMouseup(event as MouseEvent)
-    expect(component.mouseHelper).not.toBeNull()
-    expect(mouseupSpy).toHaveBeenCalled()
+    expect(mouseupSpy).toHaveBeenCalledWith(event)
 
     component.onMousemove(event as MouseEvent)
-    expect(component.mouseHelper).not.toBeNull()
-    expect(mousemoveSpy).toHaveBeenCalled()
+    expect(mousemoveSpy).toHaveBeenCalledWith(event)
   })
 
   describe('sendHotkey', () => {

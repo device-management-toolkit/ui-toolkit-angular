@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  **********************************************************************/
 import {
-  AfterViewInit,
   Component,
   ElementRef,
   OnDestroy,
@@ -13,22 +12,10 @@ import {
   inject,
   Renderer2,
   effect,
-  signal,
-  DestroyRef
+  signal
 } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import {
-  AMTDesktop,
-  AMTKvmDataRedirector,
-  RedirectorConfig,
-  DataProcessor,
-  IDataProcessor,
-  KeyBoardHelper,
-  MouseHelper,
-  Protocol
-} from '@device-management-toolkit/ui-toolkit/core'
-import { fromEvent, timer, Subscription } from 'rxjs'
-import { throttleTime } from 'rxjs/operators'
+import { type BytesPerPixel, KeyBoardHelper, KvmViewer } from '@device-management-toolkit/ui-toolkit/core'
+import { timer } from 'rxjs'
 
 interface EncodingOption {
   value: number
@@ -46,13 +33,11 @@ interface KeyObject {
 })
 export class KVMComponent implements OnDestroy {
   private readonly renderer = inject(Renderer2)
-  private readonly destroyRef = inject(DestroyRef)
   private KEY_SEQUENCE_DELAY_MS = 10
   readonly canvas = viewChild<ElementRef>('canvas')
   readonly device = viewChild.required<string>('device')
 
-  // Canvas properties
-  public context: CanvasRenderingContext2D | null = null
+  // Remote screen size, updated when the device reports it
   public width = signal(400)
   public height = signal(400)
 
@@ -68,15 +53,14 @@ export class KVMComponent implements OnDestroy {
   readonly selectedEncoding = input<number>(1)
   readonly selectedHotkey = input<string>('')
 
-  // Component state
-  module: AMTDesktop | null = null
-  redirector: AMTKvmDataRedirector | null = null
-  dataProcessor: IDataProcessor | null = null
-  mouseHelper: MouseHelper | null = null
+  // Component state. The viewer owns the canvas (transferred to the KVM worker when supported)
+  // and lives as long as the component; sessions come and go with connect/disconnect.
+  viewer: KvmViewer | null = null
   keyboardHelper: KeyBoardHelper | null = null
+  sessionActive = false
   selected = signal(1)
-  private mouseMove$?: Subscription
   private isEncodingChange = false
+  private connectTimer: ReturnType<typeof setTimeout> | null = null
 
   readonly encodings: EncodingOption[] = [
     { value: 1, viewValue: 'RLE 8' },
@@ -91,10 +75,10 @@ export class KVMComponent implements OnDestroy {
     // React to deviceConnection changes
     effect(() => {
       const connected = this.deviceConnection()
-      if (connected && this.redirector == null && !this.isEncodingChange) {
+      if (connected && !this.sessionActive && !this.isEncodingChange) {
         console.log('KVMComponent: Device connected, initializing KVM...')
         this.init()
-      } else if (!connected && this.redirector != null) {
+      } else if (!connected && this.sessionActive) {
         console.log('KVMComponent: Device disconnected, stopping KVM...')
         this.stopKvm()
       }
@@ -108,7 +92,7 @@ export class KVMComponent implements OnDestroy {
       this.selected.set(encoding)
 
       // Set flag to prevent connection effect interference
-      if (this.redirector != null) {
+      if (this.sessionActive) {
         this.isEncodingChange = true
         this.onEncodingChange()
       }
@@ -139,48 +123,27 @@ export class KVMComponent implements OnDestroy {
       }
       this.renderer.removeClass(canvasElement, 'fullscreen')
     }
-    this.mouseHelper?.resetOffsets()
   }
 
   instantiate(): void {
-    const canvas = this.canvas()
-    this.context = canvas?.nativeElement.getContext('2d') || null
-    const config: RedirectorConfig = {
-      mode: 'kvm',
-      protocol: Protocol.KVM,
-      fr: new FileReader(),
-      host: this.deviceId(),
-      port: 16994,
-      user: '',
-      pass: '',
-      tls: 0,
-      tls1only: 0,
-      authToken: this.authToken(),
-      server: this.mpsServer()
+    if (this.viewer == null) {
+      const canvas = this.canvas()?.nativeElement as HTMLCanvasElement | undefined
+      if (canvas == null) return
+      this.viewer = new KvmViewer(canvas)
+      this.viewer.onConnectionStateChange = this.onConnectionStateChange
+      this.viewer.onScreenSizeChange = (width, height) => {
+        this.width.set(width)
+        this.height.set(height)
+      }
+      this.viewer.onError = () => {
+        this.onRedirectorError()
+      }
+      this.keyboardHelper = this.viewer.createKeyboardHelper()
     }
-    this.redirector = new AMTKvmDataRedirector(config)
-    this.module = new AMTDesktop(this.context)
-    this.dataProcessor = new DataProcessor(this.redirector, this.module)
-    this.mouseHelper = new MouseHelper(this.module, this.redirector, 200)
-    this.keyboardHelper = new KeyBoardHelper(this.module, this.redirector)
-    this.redirector.onProcessData = this.module.processData.bind(this.module)
-    this.redirector.onStart = this.module.start.bind(this.module)
-    this.redirector.onNewState = this.module.onStateChange.bind(this.module)
-    this.redirector.onSendKvmData = this.module.onSendKvmData.bind(this.module)
-    this.redirector.onStateChanged = this.onConnectionStateChange.bind(this)
-    this.redirector.onError = this.onRedirectorError.bind(this)
-    this.module.onSend = this.redirector.send.bind(this.redirector)
-    this.module.onProcessData = this.dataProcessor.processData.bind(this.dataProcessor)
-    this.module.bpp = this.selected()
-
-    this.mouseMove$ = fromEvent<MouseEvent>(canvas?.nativeElement, 'mousemove')
-      .pipe(throttleTime(200), takeUntilDestroyed(this.destroyRef))
-      .subscribe((event: MouseEvent) => {
-        this.mouseHelper?.mousemove(event)
-      })
+    this.sessionActive = true
   }
 
-  private onConnectionStateChange = (redirector: any, state: number): void => {
+  private onConnectionStateChange = (state: number): void => {
     this.deviceStatus.emit(state)
   }
 
@@ -190,14 +153,27 @@ export class KVMComponent implements OnDestroy {
 
   init(): void {
     this.instantiate()
-    setTimeout(() => {
+    this.cancelConnect()
+    this.connectTimer = setTimeout(() => {
+      this.connectTimer = null
       this.autoConnect()
     }, 4000)
   }
 
+  // A second start would close the first socket mid-connect, which reads as a device disconnect
+  private cancelConnect(): void {
+    if (this.connectTimer != null) clearTimeout(this.connectTimer)
+    this.connectTimer = null
+  }
+
   autoConnect(): void {
-    if (this.redirector) {
-      this.redirector.start(WebSocket)
+    if (this.viewer && this.sessionActive) {
+      this.viewer.start({
+        server: this.mpsServer(),
+        deviceId: this.deviceId(),
+        authToken: this.authToken(),
+        bpp: this.selected() as BytesPerPixel
+      })
       this.keyboardHelper?.GrabKeyInput()
     }
   }
@@ -205,36 +181,35 @@ export class KVMComponent implements OnDestroy {
   private onEncodingChange(): void {
     this.stopKvm()
     timer(1000).subscribe(() => {
-      // Need to reinitialize since stopKvm() reset the redirector to null
+      // Need to reinitialize since stopKvm() ended the session
       this.init()
       // Note: Parent component handles clearing isEncodingChange flag after full process
     })
   }
 
   reset(): void {
-    this.redirector = null
-    this.module = null
-    this.dataProcessor = null
+    this.sessionActive = false
     this.height.set(400)
     this.width.set(400)
   }
 
   stopKvm(): void {
-    this.redirector?.stop()
+    this.cancelConnect()
+    this.viewer?.stop()
     this.keyboardHelper?.UnGrabKeyInput()
     this.reset()
   }
 
   onMouseup(event: MouseEvent): void {
-    this.mouseHelper?.mouseup(event)
+    this.viewer?.mouseup(event)
   }
 
   onMousedown(event: MouseEvent): void {
-    this.mouseHelper?.mousedown(event)
+    this.viewer?.mousedown(event)
   }
 
   onMousemove(event: MouseEvent): void {
-    this.mouseHelper?.mousemove(event)
+    this.viewer?.mousemove(event)
   }
 
   sendHotkey(hotKeyType: string): void {
@@ -418,7 +393,8 @@ export class KVMComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.mouseMove$?.unsubscribe()
     this.stopKvm()
+    this.viewer?.dispose()
+    this.viewer = null
   }
 }
