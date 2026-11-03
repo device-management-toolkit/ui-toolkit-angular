@@ -47,7 +47,7 @@
     "@angular/core": "^22.2.3",
     "@angular/platform-browser": "^22.2.3",
     "@eslint/js": "^10.0.1",
-    "@types/node": "^26.6.5",
+    "@types/node": "^26.6.6",
     "@typescript-eslint/eslint-plugin": "^8.68.0",
     "@typescript-eslint/utils": "^8.72.0",
     "@vitest/browser-playwright": "^5.0.5",
