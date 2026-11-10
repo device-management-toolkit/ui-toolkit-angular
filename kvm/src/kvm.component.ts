@@ -15,7 +15,6 @@ import {
   signal
 } from '@angular/core'
 import { type BytesPerPixel, KeyBoardHelper, KvmViewer } from '@device-management-toolkit/ui-toolkit/core'
-import { timer } from 'rxjs'
 
 interface EncodingOption {
   value: number
@@ -34,6 +33,8 @@ interface KeyObject {
 export class KVMComponent implements OnDestroy {
   private readonly renderer = inject(Renderer2)
   private KEY_SEQUENCE_DELAY_MS = 10
+  // Lets the relay release the previous AMT session, which allows a single KVM session, before reconnecting
+  private readonly RECONNECT_DELAY_MS = 800
   readonly canvas = viewChild<ElementRef>('canvas')
   readonly device = viewChild.required<string>('device')
 
@@ -60,7 +61,7 @@ export class KVMComponent implements OnDestroy {
   sessionActive = false
   selected = signal(1)
   private isEncodingChange = false
-  private connectTimer: ReturnType<typeof setTimeout> | null = null
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null
 
   readonly encodings: EncodingOption[] = [
     { value: 1, viewValue: 'RLE 8' },
@@ -78,7 +79,7 @@ export class KVMComponent implements OnDestroy {
       if (connected && !this.sessionActive && !this.isEncodingChange) {
         console.log('KVMComponent: Device connected, initializing KVM...')
         this.init()
-      } else if (!connected && this.sessionActive) {
+      } else if (!connected && (this.sessionActive || this.reconnectTimer != null)) {
         console.log('KVMComponent: Device disconnected, stopping KVM...')
         this.stopKvm()
       }
@@ -153,17 +154,13 @@ export class KVMComponent implements OnDestroy {
 
   init(): void {
     this.instantiate()
-    this.cancelConnect()
-    this.connectTimer = setTimeout(() => {
-      this.connectTimer = null
-      this.autoConnect()
-    }, 4000)
+    this.autoConnect()
   }
 
-  // A second start would close the first socket mid-connect, which reads as a device disconnect
-  private cancelConnect(): void {
-    if (this.connectTimer != null) clearTimeout(this.connectTimer)
-    this.connectTimer = null
+  // A reconnect firing after stop would open a session the user no longer wants
+  private cancelReconnect(): void {
+    if (this.reconnectTimer != null) clearTimeout(this.reconnectTimer)
+    this.reconnectTimer = null
   }
 
   autoConnect(): void {
@@ -180,11 +177,12 @@ export class KVMComponent implements OnDestroy {
 
   private onEncodingChange(): void {
     this.stopKvm()
-    timer(1000).subscribe(() => {
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null
       // Need to reinitialize since stopKvm() ended the session
       this.init()
       // Note: Parent component handles clearing isEncodingChange flag after full process
-    })
+    }, this.RECONNECT_DELAY_MS)
   }
 
   reset(): void {
@@ -194,7 +192,7 @@ export class KVMComponent implements OnDestroy {
   }
 
   stopKvm(): void {
-    this.cancelConnect()
+    this.cancelReconnect()
     this.viewer?.stop()
     this.keyboardHelper?.UnGrabKeyInput()
     this.reset()

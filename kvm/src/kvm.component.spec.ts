@@ -34,6 +34,8 @@ describe('KvmComponent', () => {
     fixture.componentRef.setInput('deviceId', '')
     fixture.detectChanges()
 
+    // init() connects immediately, so stub the socket before enabling the connection
+    vi.spyOn(KvmViewer.prototype, 'start').mockImplementation(() => {})
     // Now enable connection to trigger init
     fixture.componentRef.setInput('deviceConnection', true)
     fixture.detectChanges()
@@ -51,12 +53,12 @@ describe('KvmComponent', () => {
     fixture.componentRef.setInput('deviceId', 'device-guid')
     fixture.detectChanges()
 
+    // init() connects immediately, so stub the socket handshake before enabling the connection
+    const startSpy = vi.spyOn(KvmViewer.prototype, 'start').mockImplementation(() => {})
+    const grabKeyInputSpy = vi.spyOn(KeyBoardHelper.prototype, 'GrabKeyInput').mockImplementation(() => {})
     fixture.componentRef.setInput('deviceConnection', true) // Enable connection to trigger init
     fixture.detectChanges()
-    // Stub the socket handshake before the delayed autoConnect fires
-    const startSpy = vi.spyOn(component.viewer!, 'start').mockImplementation(() => {})
-    const grabKeyInputSpy = vi.spyOn(component.keyboardHelper!, 'GrabKeyInput').mockImplementation(() => {})
-    await vi.advanceTimersByTimeAsync(4500)
+    await vi.advanceTimersByTimeAsync(0)
     fixture.detectChanges()
     return { startSpy, grabKeyInputSpy }
   }
@@ -135,7 +137,7 @@ describe('KvmComponent', () => {
     expect(component.viewer).toBeNull()
   })
 
-  it('should disconnect and reconnect on encoding change (including delayed autoConnect)', async () => {
+  it('should disconnect and reconnect on encoding change after the reconnect delay', async () => {
     setup()
     const stopKvmSpy = vi.spyOn(component, 'stopKvm').mockImplementation(() => {})
     const autoConnectSpy = vi.spyOn(component, 'autoConnect').mockImplementation(() => {})
@@ -148,12 +150,28 @@ describe('KvmComponent', () => {
     // Then change the encoding
     fixture.componentRef.setInput('selectedEncoding', 2) // Change from default 1 to 2
     fixture.detectChanges()
-    // Wait for onEncodingChange timer (1s) + init's autoConnect delay (4s)
-    await vi.advanceTimersByTimeAsync(5100)
+    autoConnectSpy.mockClear()
+    // Not before the reconnect delay, so the relay can release the previous AMT session first
+    await vi.advanceTimersByTimeAsync(700)
+    expect(autoConnectSpy).not.toHaveBeenCalled()
+    await vi.advanceTimersByTimeAsync(200)
 
     expect(component.selected()).toEqual(2)
     expect(stopKvmSpy).toHaveBeenCalled()
     expect(autoConnectSpy).toHaveBeenCalled()
+  })
+
+  it('should not reconnect when disconnected during the reconnect delay', async () => {
+    setup()
+    const autoConnectSpy = vi.spyOn(component, 'autoConnect').mockImplementation(() => {})
+    fixture.componentRef.setInput('selectedEncoding', 2)
+    fixture.detectChanges()
+    fixture.componentRef.setInput('deviceConnection', false)
+    fixture.detectChanges()
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(autoConnectSpy).not.toHaveBeenCalled()
+    expect(component.sessionActive).toBe(false)
   })
 
   it('should reset the session on error', () => {
