@@ -7,5 +7,6 @@
  */
 
 export * from './sol/src/sol.component'
+export { SolTerminalType } from '@device-management-toolkit/ui-toolkit/core'
 export * from './kvm/src/kvm.component'
 export * from './ider/src/ider.component'

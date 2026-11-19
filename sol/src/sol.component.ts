@@ -21,7 +21,8 @@ import {
   AMTRedirector,
   TerminalDataProcessor,
   RedirectorConfig,
-  Protocol
+  Protocol,
+  SolTerminalType
 } from '@device-management-toolkit/ui-toolkit/core'
 import { TerminalComponent } from './terminal/terminal.component'
 
@@ -48,8 +49,14 @@ export class SOLComponent implements OnDestroy {
   public mpsServer = input('')
   public authToken = input('')
   public deviceId = input('')
+  readonly terminalType = input<SolTerminalType>(SolTerminalType.PCANSI)
 
   constructor() {
+    effect(() => {
+      const terminalType = this.terminalType()
+      this.dataProcessor?.setTerminalType(terminalType)
+    })
+
     // React to deviceConnection changes
     effect(() => {
       const connected = this.deviceConnection()
@@ -67,6 +74,7 @@ export class SOLComponent implements OnDestroy {
   instantiate(): void {
     this.terminal = new AmtTerminal()
     this.dataProcessor = new TerminalDataProcessor(this.terminal)
+    this.dataProcessor.setTerminalType(this.terminalType())
     const config: RedirectorConfig = {
       mode: 'sol',
       protocol: Protocol.SOL,
@@ -84,7 +92,7 @@ export class SOLComponent implements OnDestroy {
     this.terminal.onSend = this.redirector.send.bind(this.redirector)
     this.redirector.onNewState = this.terminal.StateChange.bind(this.terminal)
     this.redirector.onStateChanged = this.onTerminalStateChange.bind(this)
-    this.redirector.onProcessData = this.dataProcessor.processData.bind(this)
+    this.redirector.onProcessData = this.dataProcessor.processData.bind(this.dataProcessor)
     this.dataProcessor.processDataToXterm = this.handleWriteToXterm.bind(this)
     this.dataProcessor.clearTerminal = this.handleClearTerminal.bind(this)
     this.term = new Terminal({
@@ -108,6 +116,9 @@ export class SOLComponent implements OnDestroy {
   }
 
   onTerminalStateChange(redirector: AMTRedirector, state: number): void {
+    if (state === 0) {
+      this.dataProcessor?.reset()
+    }
     this.deviceStatus.emit(state)
     this._deviceState.set(state)
   }
@@ -121,6 +132,7 @@ export class SOLComponent implements OnDestroy {
   stopSol(): void {
     if (this.redirector != null) {
       this.redirector.stop()
+      this.dataProcessor?.reset()
       this.handleClearTerminal()
       this.term?.dispose()
       this.cleanup()
