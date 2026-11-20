@@ -1,3 +1,10 @@
+# [12.1.0](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v12.0.1...v12.1.0) (2026-11-20)
+
+
+### Features
+
+* **sol:** expose terminal type input ([#2716](https://github.com/device-management-toolkit/ui-toolkit-angular/issues/2716)) ([1415b1d](https://github.com/device-management-toolkit/ui-toolkit-angular/commit/1415b1dc81b19def04bb619c8f751c9d4bf69243))
+
 ## [12.0.1](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v12.0.0...v12.0.1) (2026-10-23)
 
 # [12.0.0](https://github.com/device-management-toolkit/ui-toolkit-angular/compare/v11.1.9...v12.0.0) (2026-10-12)
