@@ -105,7 +105,6 @@ describe('SolComponent', () => {
 
   it('should reset the processor when the component is destroyed', () => {
     setup()
-    vi.spyOn(component.redirector!, 'stop').mockImplementation(() => {})
     const resetSpy = vi.spyOn(component.dataProcessor!, 'reset')
     fixture.destroy()
     expect(resetSpy).toHaveBeenCalledOnce()
@@ -113,7 +112,6 @@ describe('SolComponent', () => {
 
   it('should reset the processor on disconnect', () => {
     setup()
-    vi.spyOn(component.redirector!, 'stop').mockImplementation(() => {})
     const resetSpy = vi.spyOn(component.dataProcessor!, 'reset')
     fixture.componentRef.setInput('deviceConnection', false)
     fixture.detectChanges()
@@ -152,15 +150,15 @@ describe('SolComponent', () => {
 
   it('should stop the websocket and dispose terminal on sol stop', () => {
     setup()
-    const redirectorSpy = vi.spyOn(AMTRedirector.prototype, 'stop').mockImplementation(() => {})
+    const redirectorSpy = vi.spyOn(AMTRedirector.prototype, 'stop')
     const cleanupSpy = vi.spyOn(component, 'cleanup').mockImplementation(() => {})
-    const handleClearTerminalSpy = vi.spyOn(component, 'handleClearTerminal').mockImplementation(() => {})
+    const resetSpy = vi.spyOn(Terminal.prototype, 'reset')
     const disposeSpy = vi.spyOn(Terminal.prototype, 'dispose').mockImplementation(() => {})
     component.stopSol()
 
     expect(component.redirector).not.toBeNull()
     expect(redirectorSpy).toHaveBeenCalled()
-    expect(handleClearTerminalSpy).toHaveBeenCalled()
+    expect(resetSpy).toHaveBeenCalled()
     expect(disposeSpy).toHaveBeenCalled()
     expect(cleanupSpy).toHaveBeenCalled()
   })

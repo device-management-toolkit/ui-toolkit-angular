@@ -132,7 +132,6 @@ export class SOLComponent implements OnDestroy {
   stopSol(): void {
     if (this.redirector != null) {
       this.redirector.stop()
-      this.dataProcessor?.reset()
       this.handleClearTerminal()
       this.term?.dispose()
       this.cleanup()
